@@ -1,5 +1,6 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
+import flatpickr from "flatpickr";
 
 /** @type {import('tailwindcss').Config} */
 export default {
@@ -8,7 +9,7 @@ export default {
         './storage/framework/views/*.php',
         './resources/views/**/*.blade.php',
         './resources/js/**/*.tsx',
-        './node_modules/flyonui/dist/js/*.js'
+        './node_modules/flyonui/dist/js/*.js',
     ],
 
     theme: {
@@ -19,5 +20,5 @@ export default {
         },
     },
 
-    plugins: [forms, require('flyonui')],
+    plugins: [forms, require('flyonui'), require('flyonui/plugin')],
 };

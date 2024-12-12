@@ -26,7 +26,7 @@ class AppointmentController extends Controller
             'viber' => $request->viber,
             'source' => $request->source,
             'is_senior_or_pwd' => $request->is_senior_or_pwd,
-            'created_by' => auth()->user()->id
+            'created_by' => auth()->user()->id,
         ]);
         return response()->json(['message' => 'Appointment added successfully.']);
     }

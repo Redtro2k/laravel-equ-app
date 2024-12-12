@@ -3,8 +3,11 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import {Head, useForm} from "@inertiajs/react";
 import {PageProps} from "@/types";
 import React from "react";
+import flatpickr from "flatpickr";
+
 
 interface AppointmentForm {
+    // appointment
     name: string;
     email: string;
     contact_number: string;
@@ -12,11 +15,16 @@ interface AppointmentForm {
     viber?: string;
     is_senior_or_pwd?: boolean;
     source: string;
+    //vehicle
+    model: string;
+    plate_number: string;
+    cs_no: string;
+    selling_dealer?: string;
 }
 
 
 const Appointment = ({auth}: PageProps) => {
-
+    const [datetime, setDateTime] = useState(new Date());
     const {data, setData, post, errors} = useForm<AppointmentForm>({
         name: '',
         contact_number: "",
@@ -24,14 +32,17 @@ const Appointment = ({auth}: PageProps) => {
         has_viber: false,
         is_senior_or_pwd: false,
         viber: "",
-        source: ""
+        source: "",
+        // vehicles
+        model: "",
+        plate_number: "",
+        cs_no: "",
+        selling_dealer: ""
     })
-
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         post(route('appointment.store'))
     }
-
 
     const [isSameNumber, setIsSameNumber] = useState<boolean>(false);
 
@@ -44,6 +55,13 @@ const Appointment = ({auth}: PageProps) => {
         }
     }, [isSameNumber, data.has_viber]);
 
+    window.addEventListener('load', function () {
+        // Basic
+        flatpickr('#flatpickr-date', {
+            monthSelectorType: 'static'
+        })
+    })
+
     return (
         <AuthenticatedLayout
             header={
@@ -55,11 +73,12 @@ const Appointment = ({auth}: PageProps) => {
             <Head title="Dashboard" />
 
             <div className="py-12">
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div className="p-6 text-gray-900">
-                            <h1>New Appointment</h1>
-                            <form onSubmit={handleSubmit}>
+                <form onSubmit={handleSubmit}>
+
+                    <div className="mx-auto max-w-7xl sm:px-6 lg:px-8 flex space-x-8">
+                        <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                            <div className="p-6 text-gray-900">
+                                <h1>New Appointment</h1>
                                 <div>
                                     <label>name</label>
                                     <input type="text" onChange={(e) => setData('name', e.target.value)}/>
@@ -118,7 +137,7 @@ const Appointment = ({auth}: PageProps) => {
                                                setData((prevData) => ({
                                                    ...prevData,
                                                    viber: value,
-                                                   has_viber: true, // Set has_viber to true when viber is edited
+                                                   has_viber: true,
                                                }));
                                                setIsSameNumber(value === data.contact_number);
                                            }}
@@ -133,13 +152,41 @@ const Appointment = ({auth}: PageProps) => {
                                     <label>source</label>
                                     <input type="text"/>
                                 </div>
-                                <div className="pt-2">
-                                    <button type="submit" className="btn btn-primary">Submit</button>
+                            </div>
+                        </div>
+                        <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                            <div className="p-6 text-gray-900">
+                                <h1>Vehicle</h1>
+                                <div>
+                                    <label>Model</label>
+                                    <input type="text" onChange={(e) => setData('model', e.target.value)}/>
                                 </div>
-                            </form>
+                                <div>
+                                    <label>Plate Number</label>
+                                    <input type="text" onChange={(e) => setData('plate_number', e.target.value)}/>
+                                </div>
+                                <div>
+                                    <label>CS No</label>
+                                    <input type="text" onChange={(e) => setData('cs_no', e.target.value)}/>
+                                </div>
+                                <div>
+                                    <label>Selling Dealer</label>
+                                    <input type="text" onChange={(e) => setData('selling_dealer', e.target.value)}/>
+                                </div>
+                            </div>
+                            <div className="p-6 text-gray-900">
+                                <h1>Appointment DateTime</h1>
+                                <input type="text" className="input max-w-sm" placeholder="YYYY-MM-DD"
+                                       id="flatpickr-date"/>
+
+                            </div>
                         </div>
                     </div>
-                </div>
+                    <div className="pt-2">
+                        <button type="submit" className="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+
             </div>
         </AuthenticatedLayout>
     );

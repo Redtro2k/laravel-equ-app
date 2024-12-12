@@ -1,5 +1,7 @@
 import '../css/app.css';
 import './bootstrap';
+import "flatpickr/dist/themes/material_green.css";
+
 
 import { createInertiaApp } from '@inertiajs/react';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
