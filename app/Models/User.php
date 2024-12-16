@@ -45,4 +45,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function sa(){
+        return $this->hasOne(ServiceAdvisor::class, 'user_id', 'id');
+    }
 }

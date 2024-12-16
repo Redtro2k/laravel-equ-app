@@ -1,6 +1,5 @@
 import defaultTheme from 'tailwindcss/defaultTheme';
 import forms from '@tailwindcss/forms';
-import flatpickr from "flatpickr";
 
 /** @type {import('tailwindcss').Config} */
 export default {
