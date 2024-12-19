@@ -1,6 +1,6 @@
 import react, {useState, Fragment, useEffect} from 'react';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import {Head, useForm} from "@inertiajs/react";
+import {Head, useForm, router} from "@inertiajs/react";
 import React from "react";
 import 'flatpickr/dist/themes/material_blue.css';
 import dayjs from 'dayjs';
@@ -11,10 +11,10 @@ import listPlugin from '@fullcalendar/list';
 import tippy from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import FullCalendar from "@fullcalendar/react";
-import {Dialog, Transition} from "@headlessui/react"; // optional for styling
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/react'
+import {Dialog, Transition, Tab, TabGroup, TabList, TabPanel, TabPanels} from "@headlessui/react"; // optional for styling
 import clsx from 'clsx'
 import Flatpickr from "react-flatpickr";
+
 
 interface SaProps {
     name: string;
@@ -23,8 +23,6 @@ interface SaProps {
 interface CollectionPage{
     Sa: SaProps[];
 }
-
-
 interface AppointmentForm {
     // appointment
     name: string;
@@ -56,13 +54,15 @@ interface SaProps {
 interface PageProps {
     auth: any;
     Sa: SaProps[];
+    Vehicles: any;
 }
 
-const Appointment: React.FC<PageProps> = ({ auth, Sa }) => {
+const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles }) => {
     const [events, setEvents] = useState([
         {
             title: 'Innova Service',
             start: '2024-12-16T03:00:00+08:00',
+            end: '',
             description: 'Toyota Innova service scheduled.',
         },
         {
@@ -89,8 +89,14 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa }) => {
     );
 
     const handleDateClick = (info:any) => {
-        setSelectedDate(info.dateStr);
-        setNewEvent({...newEvent, date: info.dateStr});
+        router.get('api/appointment', {selectedDate: info.dateStr}, {
+            preserveScroll: true,
+            preserveState: true,
+            onSuccess: (e) => console.log(e)
+        });
+        console.log(info.dateStr)
+        // setSelectedDate(info.dateStr);
+        // setNewEvent({...Vehicles.data, date: info.dateStr});
         setShowModel(true);
     }
     const handleAddEvent = () => {
@@ -107,7 +113,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa }) => {
         setSelectedDate('');
     };
 
-    const {data, setData, post, errors} = useForm<AppointmentForm>({
+    const {data, setData, post, errors, processing} = useForm<AppointmentForm>({
         name: '',
         contact_number: "",
         email: "",
@@ -134,11 +140,17 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa }) => {
                 viber: prevData.contact_number,
             }));
         }
+        else if(!data.has_viber){
+            setData('viber', '')
+        }
     }, [isSameNumber, data.has_viber]);
+
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        post(route('appointment.store'))
+        post(route('appointment.store'), {
+            preserveScroll: true
+        })
     }
 
 
@@ -158,7 +170,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa }) => {
                         <Tab
                             as={Fragment}>{({hover, selected}) => (
                                 <button className={clsx(hover && 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700', selected && 'border-indigo-500 font-semibold text-indigo-600', 'whitespace-nowrap border-b-2 px-1 py-4 text-sm font-medium')}>
-                                    Calendar
+                                    Schedule
                                 </button>
                         )}</Tab>
                         <Tab
@@ -181,7 +193,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa }) => {
                                     dayMaxEventRows={true}
                                     dateClick={handleDateClick}
                                     initialView="dayGridMonth"
-                                    events={events}
+                                    events={Vehicles.data}
                                     height={750}
                                     eventDidMount={(event) => {
                                         tippy(event.el, {
@@ -198,23 +210,31 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa }) => {
                                 <form className="grid grid-cols-2 gap-4 card-body" onSubmit={handleSubmit}>
                                     {/*customer information*/}
                                     <div className="mt-4">
-                                        <h5 className="card-title">New Appointment</h5>
+                                        <h5 className="card-title">Customer</h5>
                                         <div className="pb-4">
                                             <label className="label label-text"> Full name </label>
                                             <input type="text" className="input" placeholder="John Doe"
                                                    onChange={(e) => setData('name', e.target.value)}/>
+                                            <span className="label">
+                                                <span className="label-text-alt">
+                                                    {errors.name && <span className="label-text-alt text-rose-500 font-semibold">*{errors.name}</span>}
+                                                </span>
+                                            </span>
                                         </div>
                                         <div className="pb-4">
-                                            <label className="label label-text">E-mail Address </label>
+                                        <label className="label label-text">E-mail Address </label>
                                             <input type="email" className="input"
                                                    placeholder="example@email.com"
                                                    onChange={e => setData('email', e.target.value)}/>
+                                            {errors.email && <span className="label-text-alt text-rose-500 font-semibold">*{errors.email}</span>}
+
                                         </div>
                                         <div className="pb-4">
                                             <label className="label label-text">Contact Number </label>
                                             <input type="text" className="input"
                                                    placeholder="09xxxxxxxxx"
                                                    onChange={e => setData('contact_number', e.target.value)}/>
+                                            {errors.contact_number && <span className="label-text-alt text-rose-500 font-semibold">*{errors.contact_number}</span>}
                                         </div>
                                         <div className="pb-4">
                                             <label>Has Viber?</label>
@@ -273,6 +293,8 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa }) => {
                                                    className="input"
                                                    placeholder="09xxxxxxxxx"
                                                    disabled={!isSameNumber && !data.has_viber}/>
+                                            {errors.viber && <span className="label-text-alt text-rose-500 font-semibold">*{errors.viber}</span>}
+
                                         </div>
                                         <div className="pb-4 flex items-center gap-1">
                                             <input type="checkbox"
@@ -285,6 +307,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa }) => {
                                             <label>source</label>
                                             <input type="text" className="input"
                                                    onChange={e => setData('source', e.target.value)}/>
+                                            {errors.source && <span className="label-text-alt text-rose-500 font-semibold">*{errors.source}</span>}
                                         </div>
                                     </div>
                                     {/*vehicle information*/}
@@ -294,18 +317,24 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa }) => {
                                             <label className="label label-text">Model</label>
                                             <input type="text" className="input"
                                                    onChange={(e) => setData('model', e.target.value)}/>
+                                            {errors.model && <span className="label-text-alt text-rose-500 font-semibold">*{errors.model}</span>}
+
                                         </div>
                                         <div className="pb-4">
                                             <label className="label label-text">Plate Number</label>
                                             <input type="text"
                                                    className="input"
                                                    onChange={(e) => setData('plate_number', e.target.value)}/>
+                                            {errors.plate_number && <span className="label-text-alt text-rose-500 font-semibold">*{errors.plate_number}</span>}
+
                                         </div>
                                         <div className="pb-4">
                                             <label className="label label-text">CS No</label>
                                             <input type="text"
                                                    className="input"
                                                    onChange={(e) => setData('cs_no', e.target.value)}/>
+                                            {errors.cs_no && <span className="label-text-alt text-rose-500 font-semibold">*{errors.cs_no}</span>}
+
                                         </div>
                                         <div className="grid grid-cols-2 gap-2">
                                             <div className="pb-4">
@@ -327,6 +356,8 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa }) => {
                                                         setData('date_time', dayjs(selectedDates[0]).format('YYYY-MM-DD hh:mm:ss A'))
                                                     }}
                                                 />
+                                                {errors.date_time && <span className="label-text-alt text-rose-500 font-semibold">*{errors.date_time}</span>}
+
                                             </div>
                                             <div className="pb-4">
                                                 <label className="label label-text"
@@ -344,6 +375,8 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa }) => {
                                                         </option>
                                                     ))}
                                                 </select>
+                                                {errors.sa && <span className="label-text-alt text-rose-500 font-semibold">*{errors.sa}</span>}
+
                                             </div>
                                         </div>
                                         <div className="pb-4">
@@ -351,10 +384,12 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa }) => {
                                             <input type="text"
                                                    className="input"
                                                    onChange={(e) => setData('selling_dealer', e.target.value)}/>
+                                            {errors.selling_dealer && <span className="label-text-alt text-rose-500 font-semibold">*{errors.selling_dealer}</span>}
+
                                         </div>
                                     </div>
                                     <div className="col-span-2">
-                                        <button className="btn btn-primary">Create Appointment</button>
+                                        <button className="btn btn-primary" disabled={processing}>Create Appointment</button>
                                     </div>
                                 </form>
                             </div>

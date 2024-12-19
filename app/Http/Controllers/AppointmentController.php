@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Queuing\Appointment;
+use App\Models\Vehicle;
 use Inertia\Inertia;
 use App\Models\Customer;
 use App\Http\Requests\Appointment\AppointmentStoreRequest;
 use App\Models\User;
+use Carbon\Carbon;
+use App\Http\Resources\VehicleCollection;
 
 class AppointmentController extends Controller
 {
@@ -19,8 +23,10 @@ class AppointmentController extends Controller
                     'group_no' => $user->sa->group_no ?? null,
                 ];
             });
+        $vehicles = VehicleCollection::collection(Vehicle::all());
         return Inertia::render('Appointment/Index', [
-            'Sa' => $sa
+            'Sa' => $sa,
+            'Vehicles' => $vehicles,
         ]);
     }
     public function store(AppointmentStoreRequest $request){
@@ -40,13 +46,21 @@ class AppointmentController extends Controller
             'created_by' => auth()->user()->id,
         ]);
         $newVehicle = Customer::find($customer->id);
-        $newVehicle->vehicle()->create([
+        $vehicle = $newVehicle->vehicle()->create([
             'model' => $request->model,
             'plate_number' => $request->plate_number,
             'cs_no' => $request->cs_no,
             'selling_dealer' => $request->selling_dealer
         ]);
-//        dd($get_vehicle);
-        return response()->json(['message' => $newVehicle]);
+        $newAppointment = Vehicle::find($vehicle->id);
+
+        $date = Carbon::createFromFormat('Y-m-d h:i:s A', $request->date_time);
+
+        $newAppointment->appointment()->create([
+            'advisor' => 2,
+            'app_datetime' => $date->format('Y-m-d h:i:s'),
+            'app_id' => 001,
+            'appointment_by' => auth()->user()->id
+        ]);
     }
 }
