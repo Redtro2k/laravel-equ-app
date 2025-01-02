@@ -16,7 +16,7 @@ class Appointment extends Model
         return $this->belongsTo(User::class, 'id', 'appointment_by');
     }
     public function vehicle(){
-        return $this->belongsTo(Vehicle::class, 'id', 'vehicle_id');
+        return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
     }
     public function serviceAdvisor(){
         return $this->belongsTo(User::class, 'advisor', 'id');

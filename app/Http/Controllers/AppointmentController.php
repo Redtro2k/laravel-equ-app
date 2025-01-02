@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\QueuingSingleCollection;
 use App\Models\Queuing\Appointment;
 use App\Models\Vehicle;
 use Inertia\Inertia;
@@ -24,43 +25,51 @@ class AppointmentController extends Controller
                 ];
             });
         $vehicles = VehicleCollection::collection(Vehicle::all());
+
+        $search = request()->has('search') ? request()->input('search') : null;
+
+
+        $selectAppointment = Appointment::find($search);
+
         return Inertia::render('Appointment/Index', [
             'Sa' => $sa,
             'Vehicles' => $vehicles,
+            'select_appointment' => request()->filled('search') ? new QueuingSingleCollection($selectAppointment) : null
         ]);
     }
     public function store(AppointmentStoreRequest $request){
         $request->validated();
 
-        if($request->user()->cannot('store', Customer::class)){
-            abort(403);
-        }
-        $customer = Customer::updateOrCreate(
-            ['email' => $request->email],[
-            'name' => $request->name,
-            'contact_number' => $request->contact_number,
-            'has_viber' => $request->has_viber,
-            'viber' => $request->viber,
-            'source' => $request->source,
-            'is_senior_or_pwd' => $request->is_senior_or_pwd,
-            'created_by' => auth()->user()->id,
-        ]);
-        $newVehicle = Customer::find($customer->id);
-        $vehicle = $newVehicle->vehicle()->create([
-            'model' => $request->model,
-            'plate_number' => $request->plate_number,
-            'cs_no' => $request->cs_no,
-            'selling_dealer' => $request->selling_dealer
-        ]);
-        $newAppointment = Vehicle::find($vehicle->id);
+//        if($request->user()->cannot('store', Customer::class)){
+//            abort(403);
+//        }
+//        $customer = Customer::updateOrCreate(
+//            ['email' => $request->email],[
+//            'name' => $request->name,
+//            'contact_number' => $request->contact_number,
+//            'has_viber' => $request->has_viber,
+//            'viber' => $request->viber,
+//            'source' => $request->source,
+//            'is_senior_or_pwd' => $request->is_senior_or_pwd,
+//            'created_by' => auth()->user()->id,
+//        ]);
+//        $newVehicle = Customer::find($customer->id);
+//        $vehicle = $newVehicle->vehicle()->create([
+//            'model' => $request->model,
+//            'plate_number' => $request->plate_number,
+//            'cs_no' => $request->cs_no,
+//            'selling_dealer' => $request->selling_dealer
+//        ]);
+//        $newAppointment = Vehicle::find($vehicle->id);
 
         $date = Carbon::createFromFormat('Y-m-d h:i:s A', $request->date_time);
+        dd($date);
 
-        $newAppointment->appointment()->create([
-            'advisor' => 2,
-            'app_datetime' => $date->format('Y-m-d h:i:s'),
-            'app_id' => 001,
-            'appointment_by' => auth()->user()->id
-        ]);
+//        $newAppointment->appointment()->create([
+//            'advisor' => 2,
+//            'app_datetime' => $date,
+//            'app_id' => 001,
+//            'appointment_by' => auth()->user()->id
+//        ]);
     }
 }

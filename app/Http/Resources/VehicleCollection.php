@@ -14,14 +14,21 @@ class VehicleCollection extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'title' => '#'. $this->formatTextTicket($this->appointment->app_id). '| '. $this->plate_number,
-            'start' => $this->dateFormat($this->appointment->app_datetime),
-            'end' => $this->dateFormat($this->appointment->app_end_datetime),
-            'description' => 'the customer '. $this->customer->name . ' has been set an Appointment and assign to Service Advisor '.$this->appointment->serviceAdvisor->name.'.'
+            'title' => '#'. $this->formatTextTicket($this->appointment->app_id). '-'. strtoupper($this->plate_number),
+            'start' => $this->appointment->app_datetime,
+            'end' => $this->appointment->app_end_datetime,
+            'description' => 'the customer '. $this->customer->name . ' has been set an Appointment and assign to Service Advisor '.$this->appointment->serviceAdvisor->name.'.',
+            'id' => $this->appointment->id,
+
         ];
     }
     public function dateFormat($date)
     {
-        return Carbon::parse($date)->format("Y-m-d\TH:i:sP");
+        if(!$date){
+            return null;
+        }
+        else{
+            return Carbon::parse($date)->format("Y-m-d\TH:i:sP");
+        }
     }
 }

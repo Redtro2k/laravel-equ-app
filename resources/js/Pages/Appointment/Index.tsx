@@ -1,6 +1,6 @@
-import react, {useState, Fragment, useEffect} from 'react';
+import react, {useState, Fragment, useEffect, useCallback} from 'react';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import {Head, useForm, router} from "@inertiajs/react";
+import {Head, useForm, usePage, router} from "@inertiajs/react";
 import React from "react";
 import 'flatpickr/dist/themes/material_blue.css';
 import dayjs from 'dayjs';
@@ -14,6 +14,10 @@ import FullCalendar from "@fullcalendar/react";
 import {Dialog, Transition, Tab, TabGroup, TabList, TabPanel, TabPanels} from "@headlessui/react"; // optional for styling
 import clsx from 'clsx'
 import Flatpickr from "react-flatpickr";
+import debounce from 'lodash/debounce';
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
+
 
 
 interface SaProps {
@@ -55,9 +59,9 @@ interface PageProps {
     auth: any;
     Sa: SaProps[];
     Vehicles: any;
+    select_appointment: any
 }
-
-const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles }) => {
+const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointment }) => {
     const [events, setEvents] = useState([
         {
             title: 'Innova Service',
@@ -83,35 +87,42 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles }) => {
         date: '',
     });
 
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    const url: string = usePage().url as string;
+    //search by date
+    const [baseUrl, query] = url.split('?')
+    const uri = new URLSearchParams(query)
+    const [search, setSearch] = useState<string>(uri.get('search') || '');
 
     const eventsForSelectedDate = events.filter(
         (event) => event.start.startsWith(selectedDate)
     );
 
-    const handleDateClick = (info:any) => {
-        router.get('api/appointment', {selectedDate: info.dateStr}, {
-            preserveScroll: true,
-            preserveState: true,
-            onSuccess: (e) => console.log(e)
-        });
-        console.log(info.dateStr)
-        // setSelectedDate(info.dateStr);
-        // setNewEvent({...Vehicles.data, date: info.dateStr});
-        setShowModel(true);
-    }
-    const handleAddEvent = () => {
-        if (newEvent.title && newEvent.date) {
-            // setEvents([...events, {title: newEvent.title, start: newEvent.date}])
-        }
-        setShowModel(false); // Close the modal
-        setNewEvent({ title: '', date: '' }); // Reset form
-    };
 
-    const closeModal = () => {
-        setShowModel(false);
-        setNewEvent({ title: '', date: '' }); // Reset form
-        setSelectedDate('');
-    };
+    const updateResult = useCallback(
+        debounce((search: string) => {
+            setIsLoading(true)
+            const uri = new URLSearchParams(query)
+            if(search !== '' && search !== null) uri.delete(search)
+            uri.set('search', search);
+
+            const newUrl = `${baseUrl}?${uri.toString()}`;
+                router.get(newUrl, {}, {
+                replace: true,
+                preserveState: true,
+                onFinish: () => setIsLoading(false),
+                only: ['select_appointment']
+            })
+        }, 300),
+        [baseUrl, query]
+    );
+
+    const handleDateClick = (info:string) => {
+        updateResult(info);
+        setShowModel(true)
+    }
+
 
     const {data, setData, post, errors, processing} = useForm<AppointmentForm>({
         name: '',
@@ -132,7 +143,6 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles }) => {
     })
     const [isSameNumber, setIsSameNumber] = useState<boolean>(false);
 
-
     useEffect(() => {
         if (isSameNumber && data.has_viber) {
             setData((prevData) => ({
@@ -144,6 +154,17 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles }) => {
             setData('viber', '')
         }
     }, [isSameNumber, data.has_viber]);
+
+    const closeModal = () => {
+        uri.delete('search')
+        const newUrl = `${baseUrl}?${uri.toString()}`;
+            router.get(newUrl, {}, {
+                replace: true,
+                preserveState: true,
+                only: ['select_appointment']
+            })
+        setShowModel(false);
+    };
 
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -191,7 +212,6 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles }) => {
                                         right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
                                     }}
                                     dayMaxEventRows={true}
-                                    dateClick={handleDateClick}
                                     initialView="dayGridMonth"
                                     events={Vehicles.data}
                                     height={750}
@@ -201,6 +221,10 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles }) => {
                                             placement: 'top',
                                             theme: 'light',
                                         });
+                                    }}
+                                    eventClick={(event) => {
+                                        const eventId = event.event.id;
+                                        handleDateClick(eventId)
                                     }}
                                 />
                             </div>
@@ -424,27 +448,72 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles }) => {
                                         className="w-full max-w-6xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
                                         <Dialog.Title
                                             as="h3"
-                                            className="text-lg font-medium leading-6 text-gray-900"
+                                            className="text-lg leading-6 text-gray-900"
                                         >
-                                            Events on {dayjs(selectedDate).format('MMMM D, YYYY')}
+                                            {
+                                                isLoading
+                                                    ? <Skeleton count={1}/>
+                                                    : <p>
+                                                        Schedule ID # {select_appointment
+                                                        ? select_appointment.data.appt_id
+                                                        : null}
+                                                    </p>
+                                            }
                                         </Dialog.Title>
-                                        {eventsForSelectedDate.length > 0 ? (
-                                            <ul className="list-disc pl-5">
-                                                {eventsForSelectedDate.map((event, index) => (
-                                                    <li key={index} className="mb-2">
-                                                        <strong>{event.title}</strong> -{' '}
-                                                        {
-                                                            event.description
-                                                            || 'No details available'}
-                                                        {dayjs(event.start).format('hh:mm A')}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        ) : (
-                                            <p className="text-gray-500">
-                                                No events scheduled for this day.
-                                            </p>
-                                        )}
+                                        <div className="w-full pt-4">
+                                            <h6 className="text-lg font-semibold">Schedule Details</h6>
+                                            <hr className="mb-4 mt-2"/>
+                                        </div>
+                                        <div className="grid grid-cols-1 gap-6 md:grid-cols-1">
+
+                                        </div>
+                                        {
+                                            isLoading
+                                                ? <div><Skeleton count={5}/></div>
+                                                :
+                                                select_appointment
+                                                    ? <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                                        <div>
+                                                            <label className="label label-text">Name</label>
+                                                            <input type="text" value={select_appointment.data.name}
+                                                                   className="input" disabled/>
+                                                            <span className="error-message">Please enter your name.</span>
+                                                            <span className="success-message">Looks good!</span>
+                                                        </div>
+                                                        <div>
+                                                            <label className="label label-text">Plate Number</label>
+                                                            <input type="text" value={select_appointment.data.plate}
+                                                                   className="input" disabled/>
+                                                            <span className="error-message">Please enter your name.</span>
+                                                            <span className="success-message">Looks good!</span>
+                                                        </div>
+                                                        <div>
+                                                            <label className="label label-text">Appointment Date</label>
+                                                            <input type="text"
+                                                                   value={dayjs(select_appointment.data.appointment_date).format('MMMM D, YYYY  h:mm A')}
+                                                                   className="input" disabled/>
+                                                            <span className="error-message">Please enter your name.</span>
+                                                            <span className="success-message">Looks good!</span>
+                                                        </div>
+                                                        <div>
+                                                            <label className="label label-text">CS Number</label>
+                                                            <input type="text"
+                                                                   value={select_appointment.data.cs_no}
+                                                                   className="input" disabled/>
+                                                            <span className="error-message">Please enter your name.</span>
+                                                            <span className="success-message">Looks good!</span>
+                                                        </div>
+                                                        <div>
+                                                            <label className="label label-text">Service Advisor</label>
+                                                            <input type="text"
+                                                                   value={select_appointment.data.sa_name}
+                                                                   className="input" disabled/>
+                                                            <span className="error-message">Please enter your name.</span>
+                                                            <span className="success-message">Looks good!</span>
+                                                        </div>
+                                                    </div>
+                                                    : <span>No Selected Appointment</span>
+                                        }
                                         <div className="mt-4 flex space-x-2 justify-end">
                                             <button
                                                 type="button"
@@ -454,6 +523,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles }) => {
                                                 Close
                                             </button>
                                         </div>
+
                                     </Dialog.Panel>
                                 </Transition.Child>
                             </div>
