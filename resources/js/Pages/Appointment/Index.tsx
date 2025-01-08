@@ -1,6 +1,6 @@
 import react, {useState, Fragment, useEffect, useCallback} from 'react';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import {Head, useForm, usePage, router} from "@inertiajs/react";
+import {Head, useForm, usePage, router, Link} from "@inertiajs/react";
 import React from "react";
 import 'flatpickr/dist/themes/material_blue.css';
 import dayjs from 'dayjs';
@@ -166,6 +166,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
         setShowModel(false);
     };
 
+    console.log(select_appointment)
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -173,7 +174,6 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
             preserveScroll: true
         })
     }
-
 
     return (
         <AuthenticatedLayout
@@ -454,18 +454,25 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                                 isLoading
                                                     ? <Skeleton count={1}/>
                                                     : <p>
-                                                        Schedule ID # {select_appointment
-                                                        ? select_appointment.data.appt_id
+                                                        {select_appointment
+                                                        ? select_appointment.data.title
                                                         : null}
                                                     </p>
                                             }
                                         </Dialog.Title>
                                         <div className="w-full pt-4">
-                                            <h6 className="text-lg font-semibold">Schedule Details</h6>
+                                            <div>
+                                                <h6 className="text-lg font-semibold">Schedule Details</h6>
+                                                <small>Date
+                                                    Arrived: {select_appointment ? select_appointment.data.date_arrival : null}</small>
+                                            </div>
+                                            {
+                                                select_appointment ?
+                                                <Link href={route('add.queue')} method="post" data={{ id: select_appointment.data.id, app_date: select_appointment.data.appointment_date }}>Add Queue & Generate Ticket</Link> : null
+                                            }
                                             <hr className="mb-4 mt-2"/>
                                         </div>
                                         <div className="grid grid-cols-1 gap-6 md:grid-cols-1">
-
                                         </div>
                                         {
                                             isLoading

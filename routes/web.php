@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
         Route::resource('appointment', AppointmentController::class);
+        Route::post('/add-queue', [AppointmentController::class, 'addQueue'])->name('add.queue');
 });
 
 require __DIR__.'/auth.php';

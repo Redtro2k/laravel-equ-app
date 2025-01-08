@@ -15,4 +15,7 @@ class Vehicle extends Model
     public function appointment(){
         return $this->hasOne(Appointment::class, 'vehicle_id', 'id');
     }
+    public function walkIn(){
+        return $this->hasOne(WalkIn::class, 'vehicle_id', 'id');
+    }
 }

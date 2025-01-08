@@ -14,7 +14,9 @@ class VehicleCollection extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'title' => '#'. $this->formatTextTicket($this->appointment->app_id). '-'. strtoupper($this->plate_number),
+            'title' => $this->walkIn()->exists()
+                ? 'Queue No.'.$this->formatTextTicket($this->walkIn->queue_number)
+                : 'Appointment #'.$this->plate_number,
             'start' => $this->appointment->app_datetime,
             'end' => $this->appointment->app_end_datetime,
             'description' => 'the customer '. $this->customer->name . ' has been set an Appointment and assign to Service Advisor '.$this->appointment->serviceAdvisor->name.'.',
