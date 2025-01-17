@@ -15,7 +15,7 @@ class VehicleCollection extends JsonResource
     {
         return [
             'title' => $this->walkIn()->exists()
-                ? 'Queue No.'.$this->formatTextTicket($this->walkIn->queue_number)
+                ? 'Ticket No.'.$this->formatTextTicket($this->walkIn->queue_number)
                 : 'Appointment #'.$this->plate_number,
             'start' => $this->appointment->app_datetime,
             'end' => $this->appointment->app_end_datetime,

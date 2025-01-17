@@ -71,7 +71,7 @@ class AppointmentController extends Controller
                 'advisor' => 2,
                 'app_datetime' => $date,
                 'app_id' => 001,
-                'app_type' =>
+                'app_type' => Carbon::now()->isSameDay(Carbon::parse($date)) ? 'WALK-IN' : 'APPOINTMENT',
                 'appointment_by' => auth()->user()->id
             ]);
             // identify the current date or not
@@ -83,9 +83,9 @@ class AppointmentController extends Controller
             }
     }
 
-    public function addQueuing(Request $request){
+    public function addQueue(Request $request){
         $newQueuing = Appointment::find($request->id);
-        $date = Carbon::createFromFormat('Y-m-d h:i:s A', $request->date_time);
+        $date = Carbon::parse($request->app_date);
         if(!$newQueuing){
             abort(404);
         }

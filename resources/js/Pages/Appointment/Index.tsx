@@ -11,6 +11,7 @@ import listPlugin from '@fullcalendar/list';
 import tippy from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import FullCalendar from "@fullcalendar/react";
+import {isSameDay} from '../../Utils/dateUtils'
 import {Dialog, Transition, Tab, TabGroup, TabList, TabPanel, TabPanels} from "@headlessui/react"; // optional for styling
 import clsx from 'clsx'
 import Flatpickr from "react-flatpickr";
@@ -165,8 +166,6 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
             })
         setShowModel(false);
     };
-
-    console.log(select_appointment)
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -467,8 +466,11 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                                     Arrived: {select_appointment ? select_appointment.data.date_arrival : null}</small>
                                             </div>
                                             {
-                                                select_appointment ?
-                                                <Link href={route('add.queue')} method="post" data={{ id: select_appointment.data.id, app_date: select_appointment.data.appointment_date }}>Add Queue & Generate Ticket</Link> : null
+                                                select_appointment && select_appointment.data.appt_type === 'APPOINTMENT' && isSameDay(select_appointment.data.appointment_date)
+                                                    ?
+                                                <Link href={route('add.queue')} method="post"
+                                                      className="rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                                                      data={{ id: select_appointment.data.id, app_date: select_appointment.data.appointment_date}}>Add Queue</Link> : null
                                             }
                                             <hr className="mb-4 mt-2"/>
                                         </div>
