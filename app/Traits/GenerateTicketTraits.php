@@ -14,4 +14,10 @@ trait GenerateTicketTraits
         $checkValue = $get_customer_by_current_date->queue_number ?? 0;
         return $checkValue + 1;
     }
+
+    public function generateSA($sa){
+        if($sa == 0){
+            // create a algrothim for this selecting SA available
+        }
+    }
 }

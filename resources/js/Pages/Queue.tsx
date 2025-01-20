@@ -4,10 +4,6 @@ import listPlugin from "@fullcalendar/list";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from '@fullcalendar/interaction'
 
-
-
-
-
 interface PageProps {
     sas: {
         data: SaUsers[]
@@ -37,7 +33,7 @@ const Queue: React.FC<PageProps> = ({sas, queue}) => {
             plugins={[listPlugin, dayGridPlugin, interactionPlugin]}
             headerToolbar={{
                 left: '',
-                center: '', // Display the title only
+                center: 'title', // Display the title only
                 right: ''
             }}
             titleFormat={{
@@ -45,8 +41,9 @@ const Queue: React.FC<PageProps> = ({sas, queue}) => {
                 month: 'long',
                 day: 'numeric' // Display the full date format
             }}
+            height={750}
             initialDate={new Date()} // Focus on the current date
-            initialView="listWeek" // Sets the initial view to listWeek
+            initialView="listDay" // Sets the initial view to listWeek
             events={queue.data}
         />
     </div>

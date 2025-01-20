@@ -23,6 +23,7 @@ class AppointmentController extends Controller
             ->get()
             ->map(function ($user) {
                 return [
+                    'id' => $user->id,
                     'name' => $user->name,
                     'group_no' => $user->sa->group_no ?? null,
                 ];
@@ -42,7 +43,6 @@ class AppointmentController extends Controller
     }
     public function store(AppointmentStoreRequest $request){
         $request->validated();
-
         if($request->user()->cannot('store', Customer::class)){
             abort(403);
         }
@@ -67,9 +67,11 @@ class AppointmentController extends Controller
 
             $date = Carbon::createFromFormat('Y-m-d h:i:s A', $request->date_time);
 
+
             $newAppointment->appointment()->create([
                 'advisor' => 2,
                 'app_datetime' => $date,
+                'isPreferred' => $request->input('sa') !== 0,
                 'app_id' => 001,
                 'app_type' => Carbon::now()->isSameDay(Carbon::parse($date)) ? 'WALK-IN' : 'APPOINTMENT',
                 'appointment_by' => auth()->user()->id

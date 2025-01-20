@@ -40,7 +40,7 @@ class AppointmentStoreRequest extends FormRequest
         if(request()->routeIs('appointment.store')){ // for appointment
             $roles = $roles->merge([
                 'date_time' => 'required|date', // Ensure 12-hour format with AM/PM,
-                'sa' => 'required|integer',
+                'sa' => 'nullable|integer',
             ]);
         }
         return $roles->toArray();

@@ -397,6 +397,9 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                                             GRP {item.group_no} - {item.name}
                                                         </option>
                                                     ))}
+                                                    <option value={0}>
+                                                        None
+                                                    </option>
                                                 </select>
                                                 {errors.sa && <span className="label-text-alt text-rose-500 font-semibold">*{errors.sa}</span>}
 
