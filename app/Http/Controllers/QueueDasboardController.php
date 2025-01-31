@@ -17,6 +17,6 @@ class QueueDasboardController extends Controller
             ->orderBy('queue_number', 'ASC')
             ->get();
         $collection = DashboardQueueCollection::collection($queue);
-    return Inertia::render('Queue', ['sas' => $sa, 'queue' => $collection]);
+        return Inertia::render('Queue', ['sas' => $sa, 'queue' => $collection]);
     }
 }

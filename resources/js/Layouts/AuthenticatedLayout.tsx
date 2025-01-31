@@ -19,7 +19,6 @@ export default function Authenticated({
     children,
 }: PropsWithChildren<{ header?: ReactNode }>) {
     const { role, user }: AuthProps = usePage().props.auth;
-    console.log(role?.includes('receptionist'))
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
@@ -49,6 +48,15 @@ export default function Authenticated({
                                         active={route().current('appointment.*')}
                                     >
                                         Appointment
+                                    </NavLink>
+                                    : null
+                                }
+                                {role?.includes('sa') ?
+                                    <NavLink
+                                        href={route('queue.index')}
+                                        active={route().current('queue.*')}
+                                    >
+                                        Queue
                                     </NavLink>
                                     : null
                                 }

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -33,6 +34,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = User::find(Auth::user()->id);
+        $user->is_active = true;
+        $user->save();
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
@@ -41,6 +46,10 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
+        $user = User::find(auth()->user()->id);
+        $user->is_active = false; // Ensure you're setting an integer or boolean value.
+        $user->save();
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();

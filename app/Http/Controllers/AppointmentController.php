@@ -69,7 +69,7 @@ class AppointmentController extends Controller
 
 
             $newAppointment->appointment()->create([
-                'advisor' => 2,
+                'advisor' => $this->generateSA($request->sa),
                 'app_datetime' => $date,
                 'isPreferred' => $request->input('sa') !== 0,
                 'app_id' => 001,

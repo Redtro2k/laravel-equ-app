@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Queuing\Appointment;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -23,6 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'is_active',
     ];
 
     /**
@@ -49,5 +51,8 @@ class User extends Authenticatable
     }
     public function sa(){
         return $this->hasOne(ServiceAdvisor::class, 'user_id', 'id');
+    }
+    public function appointments(){
+        return $this->hasMany(Appointment::class, 'advisor', 'id');
     }
 }

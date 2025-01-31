@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use Carbon\Carbon;
 use App\Models\WalkIn;
+use App\Models\User;
 
 trait GenerateTicketTraits
 {
@@ -15,9 +16,27 @@ trait GenerateTicketTraits
         return $checkValue + 1;
     }
 
-    public function generateSA($sa){
-        if($sa == 0){
-            // create a algrothim for this selecting SA available
+    public function generateSA($sa = null){
+        if($sa == null || $sa == 0){
+            $advisor = User::with(['sa'])
+                ->withCount(['appointments' => function ($query) {
+                    $query->where('app_datetime', '>=', now());
+                }
+                ])
+                ->role('sa')
+                ->where('is_active', 1)
+                ->get();
+            // get user SA where active are zero
+            if($advisor->count() > 0){
+                // if zero yung irereturn kukuha siya ng isa random na SA
+                return $advisor->random()->id;
+            }
+            else{
+                return $advisor->orderBy('appointments_count', 'asc')->first()->id;
+            }
+        }
+        else{
+            return $sa;
         }
     }
 }

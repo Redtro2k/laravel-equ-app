@@ -39,8 +39,13 @@ class RegisteredUserController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'is_active' => true,
             'password' => Hash::make($request->password),
         ]);
+
+        $user->assignRole('sa');
+        $user->sa()->create(['dealer' => 'TNE', 'group_no' => 2]);
+
         event(new Registered($user));
 
         Auth::login($user);
