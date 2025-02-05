@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Queuing\Appointment;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class WalkIn extends Model
 {
@@ -21,5 +22,9 @@ class WalkIn extends Model
             'vehicle_id',
             'id'
         );
+    }
+
+    public function history(){
+        return $this->morphMany(Logs::class,'logeable');
     }
 }

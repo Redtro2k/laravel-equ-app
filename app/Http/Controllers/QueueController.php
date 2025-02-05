@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Queuing\Appointment;
 use App\Http\Resources\QueueCollection;
+use App\Models\User;
 
 class QueueController extends Controller
 {
@@ -50,31 +51,42 @@ class QueueController extends Controller
             return abort(419);
         }
 //        auth()->user()
-        if(auth()->user()->hasRole('sa')){
+        if(!auth()->user()->hasRole('sa')){
             return abort(403);
+        }
+        if(auth()->user()->is_active){
+            return redirect()->back()->with('warning', 'Your account is already active.');
         }
         $user = User::find(auth()->user()->id);
         $user->is_active = true;
         $user->save();
 
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Your account is active.');
     }
     public function setInactive(){
         if(!auth()->check()){
+            return abort(419);
+        }
+        if(!auth()->user()->hasRole('sa')){
             return abort(403);
         }
-        if(auth()->user()->hasRole('sa')){
-            return abort(403);
+        if(!auth()->user()->is_active){
+            return redirect()->back()->with('warning', 'Your account is already inactive.');
         }
         $user = User::find(auth()->user()->id);
         $user->is_active = false;
         $user->save();
-        return redirect()->back();
+        return redirect()->back()->with('success', 'Your account is inactive.');
     }
     public function nextCustomer($id){
         $appointment = Appointment::find($id);
         $appointment->vehicleWalkin->is_complete = true;
         $appointment->vehicleWalkin->save();
+        return redirect()->back();
+    }
+    public function callAgain($id){
+        $appointment = Appointment::find($id);
+        $appointment->history()->create(['type' => 'call']);
         return redirect()->back();
     }
 }

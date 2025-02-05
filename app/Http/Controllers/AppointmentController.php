@@ -84,7 +84,6 @@ class AppointmentController extends Controller
                 ]);
             }
     }
-
     public function addQueue(Request $request){
         $newQueuing = Appointment::find($request->id);
         $date = Carbon::parse($request->app_date);

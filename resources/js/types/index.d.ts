@@ -1,4 +1,5 @@
 export interface User {
+    is_active: number;
     id: number;
     name: string;
     email: string;

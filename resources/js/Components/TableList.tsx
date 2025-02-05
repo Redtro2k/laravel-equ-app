@@ -1,4 +1,4 @@
-import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/20/solid';
+import { ChevronDownIcon, ChevronUpIcon, ArrowRightCircleIcon } from '@heroicons/react/20/solid';
 import {Link} from '@inertiajs/react'
 
 type Props = {
@@ -7,6 +7,9 @@ type Props = {
     filterBy?: (header: string) => void;
     currentFilter?: string;
     currentSort?: string;
+    emptySpan?: string;
+    currentTab?: string;
+    selectedTab?: string;
     button?: Array<{
         primary: string;
         linkable: string;
@@ -16,7 +19,7 @@ type Props = {
 
 const convertToHumanReadable = (str: string): string =>
     str.split('_').map(word => word[0].toUpperCase() + word.slice(1)).join(' ');
-export default function Table({ headers, records, filterBy, currentFilter, currentSort, button }: Props) {
+export default function Table({ headers, records, filterBy, currentFilter, currentSort, button, emptySpan, currentTab, selectedTab }: Props) {
 
     return (
         <div className="mt-8 flow-root">
@@ -61,14 +64,14 @@ export default function Table({ headers, records, filterBy, currentFilter, curre
                                 <td colSpan={headers.length}>
                                     <div className="py-28 text-gray-300 flex justify-center">
                                         <div>
-                                            <h1 className="uppercase font-extrabold">No Records</h1>
+                                            <h1 className="uppercase font-extrabold">{emptySpan ?? 'No Records'}</h1>
                                         </div>
                                     </div>
                                 </td>
                             </tr>
                         ) : (
                             records.map((record, i) => (
-                                <tr key={i} className="even:bg-gray-50">
+                                <tr key={i} className={currentTab ?? "even:bg-gray-50"}>
                                     {headers.map((header, index) => (
                                         <td
                                             key={index}
@@ -76,12 +79,19 @@ export default function Table({ headers, records, filterBy, currentFilter, curre
                                                 index === 0 ? 'text-gray-900' : 'text-gray-500'
                                             }`}
                                         >
-                                            {header !== button?.[0]?.primary ? (
-                                                record[header]
-                                            ) : (
-                                                <Link href={route(button[0].linkable, record[header])} className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-                                                >{button[0].text}</Link>
-                                            )}
+                                            <div className="flex">
+                                                {
+                                                    header === selectedTab ? <div>
+                                                        {record[header] == currentTab ? <ArrowRightCircleIcon className="h-4.5 w-4.5 text-rose-500"/> : <></>}
+                                                    </div> : <></>
+                                                }
+                                                {header !== button?.[0]?.primary ? (
+                                                    record[header]
+                                                ) : (
+                                                    <Link href={route(button[0].linkable, record[header])} className="rounded-full bg-white px-2.5 py-1 text-xs font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+                                                    >{button[0].text}</Link>
+                                                )}
+                                            </div>
                                         </td>
                                     ))}
                                 </tr>

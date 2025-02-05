@@ -2,8 +2,12 @@ import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
-import { Link, usePage } from '@inertiajs/react';
-import { PropsWithChildren, ReactNode, useState } from 'react';
+import { Link, usePage, router } from '@inertiajs/react';
+import { PropsWithChildren, ReactNode, useState, useEffect } from 'react';
+import {Transition} from "@headlessui/react";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import {faSpinner} from '@fortawesome/free-solid-svg-icons'
+
 
 interface AuthProps {
     role?: string[],
@@ -15,14 +19,25 @@ interface AuthProps {
     };
 }
 export default function Authenticated({
-    header,
-    children,
-}: PropsWithChildren<{ header?: ReactNode }>) {
+      header,
+      children,
+  }: PropsWithChildren<{ header?: ReactNode }>) {
     const { role, user }: AuthProps = usePage().props.auth;
-
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
+    const [processing, setProcessing] = useState(false);
 
+    useEffect(() => {
+        const start = () => setProcessing(true);
+        const finish = () => setProcessing(false);
+
+        router.on('start', start);
+        router.on('finish', finish);
+        return () => {
+            router.on('start', () => {});
+            router.on('finish', () => {});
+        };
+    }, []);
     return (
         <div className="min-h-screen bg-gray-100">
             <nav className="border-b border-gray-100 bg-white">
@@ -202,7 +217,24 @@ export default function Authenticated({
                 </header>
             )}
 
-            <main>{children}</main>
+            <main>
+                <div className="relative">
+                    <Transition
+                        show={processing}
+                        enter="transition-opacity duration-300 ease-out"
+                        enterFrom="opacity-0"
+                        enterTo="opacity-100"
+                        leave="transition-opacity duration-300 ease-in"
+                        leaveFrom="opacity-100"
+                        leaveTo="opacity-0"
+                    >
+                        <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
+                            <div className="text-xl font-semibold animate-spin"><FontAwesomeIcon icon={faSpinner} /></div>
+                        </div>
+                    </Transition>
+                    {children}
+                </div>
+            </main>
         </div>
     );
 }
