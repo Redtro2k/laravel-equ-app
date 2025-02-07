@@ -27,4 +27,8 @@ class WalkIn extends Model
     public function history(){
         return $this->morphMany(Logs::class,'logeable');
     }
+
+    public function appointmentLogs(){
+        return $this->hasOne(Appointment::class,'id','appointment_id');
+    }
 }

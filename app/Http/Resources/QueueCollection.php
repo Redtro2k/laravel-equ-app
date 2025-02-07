@@ -15,6 +15,7 @@ class QueueCollection extends JsonResource
     public function toArray(Request $request): array
     {
         return [
+                'appointment_id' => $this->id,
                 'queue_no' => $this->when($this->relationLoaded('vehicleWalkin'), fn() => $this->formatTextTicket($this->vehicleWalkin->queue_number)),
                 'plate_number' => $this->when($this->relationLoaded('vehicle'), fn() => strtoupper($this->vehicle->plate_number)),
                 'cs' => $this->when($this->relationLoaded('vehicle'), fn() => strtoupper($this->vehicle->cs_no)),

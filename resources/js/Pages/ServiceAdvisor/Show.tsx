@@ -54,7 +54,7 @@ interface CustomPageProps extends InertiaPageProps{
 
 export default function Show(){
     const pages = usePage<CustomPageProps>().props as CustomPageProps;
-    const headers: string[] = pages.queues.data.length > 0 ? Object.keys(pages.queues.data[0]) : [];
+    const headers: string[] = ['queue_no', 'plate_number', 'cs', 'vehicle_model', 'time'];
     const stats = [
         { name: 'Current', value: pages.current?.data?.queue_no ?? 0 },
         { name: 'Next', value: pages.next?.data?.queue_no ?? 0 },
@@ -62,7 +62,6 @@ export default function Show(){
         { name: 'Queues', value: pages.solve.all_completed ?? 0, balance: pages.solve.all_queue ?? 0 },
     ]
 
-    console.log(pages.auth?.user.is_active)
     useEffect(() => {
         if(pages.flash?.success) toast.success(pages.flash.success);
         if(pages.flash?.warning) toast(pages.flash.warning, {icon: "⚠️"});
@@ -102,7 +101,7 @@ export default function Show(){
                     <div className="col-span-2 grid grid-cols-2 gap-2 h-1/2">
                         <Link
                             as="button"
-                            href={route('queue.set-active')}
+                            href={route('queue.set-active', pages.current?.data?.appointment_id)}
                             className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-center text-rose-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
                             disabled={pages.auth.user.is_active == 1}
                         >
@@ -118,12 +117,13 @@ export default function Show(){
                             <FontAwesomeIcon className="text-6xl py-4" icon={faPhone}/>
                             <p className="text-rose-600 font-bold">Call Again</p>
                         </Link>
-                        <button
-                            type="button"
+                        <Link
+                            href={route('queue.next-customer', pages.current?.data?.appointment_id)}
+                            as="button"
                             className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-rose-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
                             <FontAwesomeIcon className="text-6xl py-4" icon={faForward} />
                             <p className="text-rose-600 font-bold">Next Customer</p>
-                        </button>
+                        </Link>
                         <Link
                             as="button"
                             href={route('queue.set-inactive')}

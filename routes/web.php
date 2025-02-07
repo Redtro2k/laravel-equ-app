@@ -27,7 +27,7 @@ Route::middleware('auth')->group(function () {
     Route::group(['middleware' => ['role:sa'], 'controller' => QueueController::class, 'prefix' => 'queue', 'as' => 'queue.'], function () {
         Route::get('', 'index')->name('index');
         Route::get('next-customer/{id}', 'nextCustomer')->name('next-customer');
-        Route::get('sa-active', 'setActive')->name('set-active');
+        Route::get('sa-active/{id?}', 'setActive')->name('set-active');
         Route::get('sa-inactive', 'setInactive')->name('set-inactive');
         Route::get('call-again/{id}', 'callAgain')->name('call-again');
     });

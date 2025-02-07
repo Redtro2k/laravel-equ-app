@@ -2,12 +2,17 @@
 
 namespace App\Models\Queuing;
 
+use App\Models\AppointmentLogs;
+use App\Models\Logs;
 use App\Models\ServiceAdvisor;
 use App\Models\Vehicle;
 use App\Models\WalkIn;
+use App\Observers\AppointmentObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 
+#[ObservedBy([AppointmentObserver::class])]
 class Appointment extends Model
 {
     //
@@ -32,5 +37,10 @@ class Appointment extends Model
     public function serviceAdvisor(){
         return $this->belongsTo(User::class, 'advisor', 'id');
     }
-
+    public function history(){
+        return $this->morphMany(Logs::class,'logeable');
+    }
+    public function log(){
+        return $this->hasOne(AppointmentLogs::class, 'appointment_id', 'id');
+    }
 }

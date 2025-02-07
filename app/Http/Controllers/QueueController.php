@@ -9,6 +9,7 @@ use Inertia\Inertia;
 use App\Models\Queuing\Appointment;
 use App\Http\Resources\QueueCollection;
 use App\Models\User;
+use App\Observers\AppointmentObserver;
 
 class QueueController extends Controller
 {
@@ -16,7 +17,7 @@ class QueueController extends Controller
         if(!auth()->check()){
             return abort(403);
         }
-        sleep(2);
+        sleep(1);
         $queues = Appointment::
             with(['serviceAdvisor', 'vehicle', 'vehicle.customer', 'vehicleWalkin'])
             ->has('vehicleWalkin')
@@ -46,11 +47,10 @@ class QueueController extends Controller
             ],
         ]);
     }
-    public function setActive(){
+    public function setActive($id){
         if(!auth()->check()){
             return abort(419);
         }
-//        auth()->user()
         if(!auth()->user()->hasRole('sa')){
             return abort(403);
         }
@@ -60,6 +60,12 @@ class QueueController extends Controller
         $user = User::find(auth()->user()->id);
         $user->is_active = true;
         $user->save();
+
+        $appointment = Appointment::find($id);
+        if($appointment){
+            $observer = new AppointmentObserver();
+            $observer->started($appointment);
+        }
 
         return redirect()->back()->with('success', 'Your account is active.');
     }
@@ -80,9 +86,13 @@ class QueueController extends Controller
     }
     public function nextCustomer($id){
         $appointment = Appointment::find($id);
-        $appointment->vehicleWalkin->is_complete = true;
-        $appointment->vehicleWalkin->save();
-        return redirect()->back();
+        $startedObserver = new AppointmentObserver();
+        $startedObserver->end($appointment);
+//        $appointment->vehicleWalkin->is_complete = true;
+//        $appointment->vehicleWalkin->save();
+//        //create logs
+//        $appointment->history()->create(['type' => 'completed']);
+//        return redirect()->back();
     }
     public function callAgain($id){
         $appointment = Appointment::find($id);
