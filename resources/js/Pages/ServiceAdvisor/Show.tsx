@@ -109,7 +109,7 @@ export default function Show(){
                             <p className="text-rose-600 font-bold">Start</p>
                         </Link>
                         <Link
-                            href={route('queue.next-customer', 1)}
+                            href={route('queue.call-again', pages.current?.data?.appointment_id)}
                             as="button"
                             className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-rose-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
                             disabled={pages.auth.user.is_active == 0 || pages.queues.data.length === 0}

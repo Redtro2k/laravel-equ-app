@@ -1,0 +1,39 @@
+<?php
+namespace App\Traits;
+
+trait BaseModelTraits{
+    public static function next($id, $column = 'id'){
+        return static::where($column, '>', $id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+    }
+
+    public static function prev($id, $column = 'id'){
+        return static::where($column, '<', $id)
+            ->orderBy($column, 'desc')
+            ->first();
+    }
+    public static function sa($id, $hasIncludeRelation = false) // Caution: for SA function, note require authenticated user
+    {
+        $query = self::whereHas('serviceAdvisor', function($query) use($id) {
+            $query->where('advisor', $id);
+        });
+        if ($hasIncludeRelation) {
+            $query->with(['serviceAdvisor', 'vehicle', 'vehicle.customer', 'vehicleWalkin']);
+        }
+        return $query;
+    }
+    public function scopeNowQueries($query){
+        return $query->where('app_datetime', '>=', now());
+    }
+    public function scopeCurrent($query)
+    {
+        return $query->orderBy('id', 'asc');
+    } // you should use a first()
+
+    public function scopeFinished($query){
+        return $query->whereHas('vehicleWalkin', function($q){
+            $q->where('is_complete', true);
+        });
+    }
+}

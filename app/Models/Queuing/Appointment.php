@@ -11,11 +11,13 @@ use App\Observers\AppointmentObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
+use App\Traits\BaseModelTraits;
 
 #[ObservedBy([AppointmentObserver::class])]
 class Appointment extends Model
 {
     //
+    use BaseModelTraits;
     protected $guarded = [];
 
     public function receptionist(){

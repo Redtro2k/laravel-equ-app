@@ -18,7 +18,7 @@ return new class extends Migration
             $table->dateTime('start_time')->nullable();
             $table->dateTime('retake_time')->nullable();
             $table->dateTime('end_time')->nullable();
-            $table->integer('calls_count')->default(0);
+            $table->integer('callout')->default(0);
             $table->timestamps();
         });
     }
