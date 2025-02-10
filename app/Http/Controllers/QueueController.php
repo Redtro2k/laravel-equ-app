@@ -10,6 +10,7 @@ use App\Models\Queuing\Appointment;
 use App\Http\Resources\QueueCollection;
 use App\Models\User;
 use App\Observers\AppointmentObserver;
+use Ramsey\Collection\Queue;
 
 class QueueController extends Controller
 {
@@ -18,28 +19,21 @@ class QueueController extends Controller
             return abort(403);
         }
         sleep(1);
-        $queues = Appointment::sa(2);
+        $queues = Appointment::sa(2, true)->nowQueries();
 
-//        $c_queues = clone $queues;
-//
-//        $currentQueue = $queues->first();
-//        $nextQueue = $queues->skip(1)->first();
-//
-//        $finished = $c_queues->whereHas('vehicleWalkin', function($q){
-//            $q->where('is_complete', true);
-//        })->count();
-        dd();
+        $finished = (clone $queues)->notFinished()->current()->skip(1);
 
-//        return Inertia::render('ServiceAdvisor/Show', [
-//            'queues' => QueueCollection::collection($queues->paginate(5)),
-//            'current' => $currentQueue ? new QueueCollection($queues->current()->first()) : null,
-//            'next' => $nextQueue ? new QueueCollection($nextQueue) : null,
-//            'finished' => $finished,
-//            'solve' => [
-//                'all_complete' => $finished,
-//                'all_queue' => $queues->count()
-//            ],
-//        ]);
+        return Inertia::render('ServiceAdvisor/Show', [
+           'referred_queue' => QueueCollection::collection((clone $queues)->notFinished()->isPreferred()->paginate(7, ['*'], 'referred_queue')),
+           'not_referred_queue' => QueueCollection::collection((clone $queues)->notFinished()->isNotPreferred()->paginate(7, ['*'], 'not_refer_queue')),
+            'current' => new QueueCollection((clone $queues)->notFinished()->first()) ?? null,
+            'next' => $finished->first() ? new QueueCollection($finished->first()) : null,
+            'finished' => (clone $queues)->finished()->count() ?? null,
+            'solve' => [
+                'all_complete' => (clone $queues)->notFinished()->count(),
+                'all_queue' => (clone $queues)->count()
+            ],
+        ]);
     }
     public function setActive($id){
         if(!auth()->check()){

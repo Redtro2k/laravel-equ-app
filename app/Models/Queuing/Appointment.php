@@ -45,4 +45,29 @@ class Appointment extends Model
     public function log(){
         return $this->hasOne(AppointmentLogs::class, 'appointment_id', 'id');
     }
+    public function scopeIsPreferred($query){
+        return $query->where('isPreferred', true);
+    }
+    public function scopeIsNotPreferred($query){
+        return $query->where('isPreferred', false);
+    }
+    public function scopeFinished($query){
+        return $query->whereHas('vehicleWalkin', function($q){
+            $q->where('is_complete', true);
+        });
+    }
+    public function scopeNotFinished($query){
+        return $query->whereHas('vehicleWalkin', function($q){
+            $q->where('is_complete', false);
+        });
+    }
+    public function scopeCurrent($query)
+    {
+        return $query->orderBy('id', 'asc');
+    }
+    public function scopeNowQueries($query){
+        return $query
+            ->where('app_datetime', '>=', now()->startOfDay())
+            ->where('app_datetime', '<=', now()->endOfDay());
+    }
 }

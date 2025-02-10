@@ -23,17 +23,4 @@ trait BaseModelTraits{
         }
         return $query;
     }
-    public function scopeNowQueries($query){
-        return $query->where('app_datetime', '>=', now());
-    }
-    public function scopeCurrent($query)
-    {
-        return $query->orderBy('id', 'asc');
-    } // you should use a first()
-
-    public function scopeFinished($query){
-        return $query->whereHas('vehicleWalkin', function($q){
-            $q->where('is_complete', true);
-        });
-    }
 }

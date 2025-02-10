@@ -34,14 +34,15 @@ interface User {
 }
 
 interface CustomPageProps extends InertiaPageProps{
-    queues: Queue
+    referred_queue: Queue
+    not_referred_queue: Queue
     current: any
     next: any
     auth: {
         user: User
     }
     solve: {
-        all_completed: number
+        all_complete: number
         all_queue: number
     }
     flash: {
@@ -51,21 +52,22 @@ interface CustomPageProps extends InertiaPageProps{
     // Other props...
 }
 
-
 export default function Show(){
     const pages = usePage<CustomPageProps>().props as CustomPageProps;
-    const headers: string[] = ['queue_no', 'plate_number', 'cs', 'vehicle_model', 'time'];
+    const headers: string[] = ['queue_no', 'plate_number', 'cs', 'vehicle_model', 'time', 'appointment_id'];
     const stats = [
-        { name: 'Current', value: pages.current?.data?.queue_no ?? 0 },
-        { name: 'Next', value: pages.next?.data?.queue_no ?? 0 },
+        { name: 'Current', value: pages.current?.data?.queue_no ?? '--' },
+        { name: 'Next', value: pages.next?.data?.queue_no ?? '--' },
         { name: 'Finished', value: pages.finished ?? 0 },
-        { name: 'Queues', value: pages.solve.all_completed ?? 0, balance: pages.solve.all_queue ?? 0 },
+        { name: 'Total Remaining & all Queries', value: pages.solve.all_complete ?? 0, balance: pages.solve.all_queue ?? 0 },
     ]
 
     useEffect(() => {
         if(pages.flash?.success) toast.success(pages.flash.success);
         if(pages.flash?.warning) toast(pages.flash.warning, {icon: "⚠️"});
     }, [pages.flash]);
+
+
     return <AuthenticatedLayout
         header={
             <h2 className="text-xl font-semibold leading-tight text-gray-800">
@@ -112,7 +114,7 @@ export default function Show(){
                             href={route('queue.call-again', pages.current?.data?.appointment_id)}
                             as="button"
                             className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-rose-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
-                            disabled={pages.auth.user.is_active == 0 || pages.queues.data.length === 0}
+                            disabled={pages.auth.user.is_active == 0 || pages.referred_queue.data.length === 0}
                         >
                             <FontAwesomeIcon className="text-6xl py-4" icon={faPhone}/>
                             <p className="text-rose-600 font-bold">Call Again</p>
@@ -120,7 +122,9 @@ export default function Show(){
                         <Link
                             href={route('queue.next-customer', pages.current?.data?.appointment_id)}
                             as="button"
-                            className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-rose-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50">
+                            className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-rose-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
+                            disabled={pages.next === null || pages.referred_queue.data.length === 0}
+                        >
                             <FontAwesomeIcon className="text-6xl py-4" icon={faForward} />
                             <p className="text-rose-600 font-bold">Next Customer</p>
                         </Link>
@@ -140,17 +144,18 @@ export default function Show(){
                         <div className={pages.auth.user.is_active != 1 ? "opacity-50" : ""}>
                             <TableList
                                 headers={headers}
-                                records={pages.queues.data}
+                                records={pages.referred_queue.data}
                                 emptySpan="No Customer for Today!"
                                 selectedTab="queue_no"
                                 currentTab={pages.current?.data?.queue_no}
+                                onModal={}
                             />
                             <div className="pb-4 px-8">
                                 <Pagination
-                                    meta={pages.queues.meta}
-                                    current={pages.queues.meta.current_page}
-                                    lastPage={pages.queues.meta.last_page}
-                                    from={pages.queues.meta.from}
+                                    meta={pages.referred_queue.meta}
+                                    current={pages.referred_queue.meta.current_page}
+                                    lastPage={pages.referred_queue.meta.last_page}
+                                    from={pages.referred_queue.meta.from}
                                 />
                             </div>
                         </div>
@@ -160,14 +165,14 @@ export default function Show(){
                             <UsersIcon className="h-7"/>  <p>Customer Received</p></h1>
                             <TableList
                                 headers={headers}
-                                records={pages.queues.data}
+                                records={pages.not_referred_queue.data}
                             />
                             <div className="pb-4 px-8">
                                 <Pagination
-                                    meta={pages.queues.meta}
-                                    current={pages.queues.meta.current_page}
-                                    lastPage={pages.queues.meta.last_page}
-                                    from={pages.queues.meta.from}
+                                    meta={pages.not_referred_queue.meta}
+                                    current={pages.not_referred_queue.meta.current_page}
+                                    lastPage={pages.not_referred_queue.meta.last_page}
+                                    from={pages.not_referred_queue.meta.from}
                                 />
                             </div>
                     </div>
