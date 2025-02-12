@@ -5,9 +5,12 @@ use App\Http\Controllers\ProfileController;
 use App\Models\User;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\QueueDasboardController;
+use App\Http\Controllers\QrGeneratorController;
 use App\Http\Controllers\QueueController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+
 
 Route::get('/', [QueueDasboardController::class , 'index'])->name('home');
 
@@ -32,5 +35,12 @@ Route::middleware('auth')->group(function () {
         Route::get('call-again/{id}', 'callAgain')->name('call-again');
     });
 });
+Route::group(['prefix' => 'customer', 'as' => 'customer.'], function(){
+    Route::resource('qr', QrGeneratorController::class, ['only' => ['show']]);
+    Route::get('printed/{id}', function($id){
+        dd($id);
+    })->name('printed');
+});
+
 
 require __DIR__.'/auth.php';

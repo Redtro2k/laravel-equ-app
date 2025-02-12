@@ -148,7 +148,6 @@ export default function Show(){
                                 emptySpan="No Customer for Today!"
                                 selectedTab="queue_no"
                                 currentTab={pages.current?.data?.queue_no}
-                                onModal={}
                             />
                             <div className="pb-4 px-8">
                                 <Pagination

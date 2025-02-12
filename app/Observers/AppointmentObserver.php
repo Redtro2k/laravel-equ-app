@@ -13,6 +13,7 @@ class AppointmentObserver
     public function created(Appointment $appointment): void
     {
         //
+
     }
 
     // custom functtion

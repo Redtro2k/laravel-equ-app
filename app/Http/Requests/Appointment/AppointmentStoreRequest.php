@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Appointment;
 
+use App\Rules\LastCharacterNumberValidation;
+use App\Rules\UniquePlateNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AppointmentStoreRequest extends FormRequest
@@ -32,7 +34,7 @@ class AppointmentStoreRequest extends FormRequest
         if(request()->routeIs('appointment.store')){ // for vehicle
             $roles = $roles->merge([
                 'model' => 'required|string',
-                'plate_number' => 'required|string',
+                'plate_number' => ['required', new UniquePlateNumber(), new LastCharacterNumberValidation()],
                 'cs_no' => 'required|string',
                 'selling_dealer' => 'nullable|string',
             ]);

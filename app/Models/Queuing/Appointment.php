@@ -3,6 +3,7 @@
 namespace App\Models\Queuing;
 
 use App\Models\AppointmentLogs;
+use App\Models\Customer;
 use App\Models\Logs;
 use App\Models\ServiceAdvisor;
 use App\Models\Vehicle;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Traits\BaseModelTraits;
+
 
 #[ObservedBy([AppointmentObserver::class])]
 class Appointment extends Model
@@ -25,6 +27,9 @@ class Appointment extends Model
     }
     public function vehicle(){
         return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
+    }
+    public function customer(){
+        return $this->hasOneThrough(Customer::class, Vehicle::class, 'id', 'id', 'vehicle_id', 'customer_id');
     }
     public function vehicleWalkin(){
         return $this->hasOneThrough(

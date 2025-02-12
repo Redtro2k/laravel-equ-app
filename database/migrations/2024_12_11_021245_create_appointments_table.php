@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('advisor')->nullable();
             $table->foreign('advisor')->references('id')->on('users');
+            $table->uuid('qr_slug')->unique();
             $table->boolean('isPreferred')->default(false);
             $table->dateTime('app_datetime');
             $table->dateTime('app_end_datetime')->nullable();
             $table->unsignedBigInteger('vehicle_id');
             $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('cascade');
-            $table->bigInteger('app_id');
             $table->unsignedBigInteger('appointment_by');
             $table->foreign('appointment_by')->references('id')->on('users');
             $table->timestamps();
