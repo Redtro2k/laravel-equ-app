@@ -6,16 +6,13 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('appointments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('advisor')->nullable();
             $table->foreign('advisor')->references('id')->on('users');
-            $table->uuid('qr_slug')->unique();
+            $table->uuid('qr_slug')->nullable()->unique();
             $table->boolean('isPreferred')->default(false);
             $table->dateTime('app_datetime');
             $table->dateTime('app_end_datetime')->nullable();
@@ -26,10 +23,6 @@ return new class extends Migration
             $table->timestamps();
         });
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('appointments');

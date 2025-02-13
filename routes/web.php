@@ -10,7 +10,7 @@ use App\Http\Controllers\QueueController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
-
+use App\Http\Controllers\ReceiptController;
 
 Route::get('/', [QueueDasboardController::class , 'index'])->name('home');
 
@@ -37,9 +37,7 @@ Route::middleware('auth')->group(function () {
 });
 Route::group(['prefix' => 'customer', 'as' => 'customer.'], function(){
     Route::resource('qr', QrGeneratorController::class, ['only' => ['show']]);
-    Route::get('printed/{id}', function($id){
-        dd($id);
-    })->name('printed');
+    Route::get('printed/{id}', [ReceiptController::class, 'show'])->name('printed');
 });
 
 

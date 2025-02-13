@@ -18,6 +18,7 @@ import Flatpickr from "react-flatpickr";
 import debounce from 'lodash/debounce';
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
+import toast, {Toaster} from "react-hot-toast";
 
 
 
@@ -61,8 +62,12 @@ interface PageProps {
     Sa: SaProps[];
     Vehicles: any;
     select_appointment: any
+    flash: {
+        success?: string;
+        warning?: string;
+    }
 }
-const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointment }) => {
+const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointment, flash }) => {
     const [events, setEvents] = useState([
         {
             title: 'Innova Service',
@@ -89,6 +94,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
     });
 
     const [isLoading, setIsLoading] = React.useState(false);
+    const props = usePage().props;
 
     const url: string = usePage().url as string;
     //search by date
@@ -166,11 +172,15 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
             })
         setShowModel(false);
     };
+    useEffect(() => {
+        if(flash?.success) toast.success(flash.success);
+        if(flash?.warning) toast(flash.warning, {icon: "⚠️"});
+    }, [flash]);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         post(route('appointment.store'), {
-            preserveScroll: true
+            preserveScroll: true,
         })
     }
 
@@ -183,7 +193,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
             }
         >
             <Head title="Dashboard" />
-
+            <Toaster position="top-right" reverseOrder={false} />
             <div className="py-12 px-16">
                 <TabGroup className="border-b border-gray-200">
                     <TabList className="-mb-px flex space-x-8">
@@ -534,6 +544,19 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                             >
                                                 Close
                                             </button>
+                                            {
+                                                select_appointment && select_appointment.data.date_arrival && isSameDay(select_appointment.data.appointment_date) ?
+                                                    <Link
+                                                        href={route('customer.qr.show', select_appointment.data.qr_code)}
+                                                        className="btn btn-primary waves waves-primary"
+                                                        onClick={closeModal}
+                                                    >
+                                                        View & Print QR
+                                                    </Link>
+                                                    :
+                                                null
+                                            }
+
                                         </div>
 
                                     </Dialog.Panel>

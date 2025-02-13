@@ -20,13 +20,13 @@ class QueuingSingleCollection extends JsonResource
             'title' => $this->vehicleWalkin()->exists()
                     ? 'Queue No.'.$this->formatTextTicket($this->vehicleWalkin->queue_number)
                     : 'Set Appointment by on '.$this->queuingDateFormat($this->app_datetime)->format('M j, Y g:i A'),
-            'appt_id' => $this->formatTextTicket($this->app_id),
-            'appt_type' => $this->app_type,
-            'date_arrival' => $this->relationLoaded('walkIn') ?  $this->queuingDateFormat($this->vehicle->walkIn->date_arrived)->diffForHumans() : 'pending',
+            'appt_type' => $this->appointment,
+            'date_arrival' => $this->relationLoaded('vehicleWalkin') ?  $this->queuingDateFormat($this->vehicle->walkIn->date_arrived)->diffForHumans() : 'pending',
             'name' => $this->vehicle->customer->name,
             'plate' => strtoupper($this->vehicle->plate_number),
             'cs_no' => strtoupper($this->vehicle->cs_no),
             'appointment_date' => $this->app_datetime,
+            'qr_code' => $this->relationLoaded('vehicleWalkin') ? $this->qr_slug : null,
             'sa_name' => $this->serviceAdvisor->name,
         ];
     }
