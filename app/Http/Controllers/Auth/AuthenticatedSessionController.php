@@ -38,7 +38,7 @@ class AuthenticatedSessionController extends Controller
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request): RedirectResponseq
     {
         $user = User::find(auth()->user()->id);
         $user->is_active = false; // Ensure you're setting an integer or boolean value.
