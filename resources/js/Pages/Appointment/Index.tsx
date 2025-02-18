@@ -20,8 +20,6 @@ import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import toast, {Toaster} from "react-hot-toast";
 
-
-
 interface SaProps {
     name: string;
     group_no: number;
@@ -131,8 +129,8 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
     }
 
 
-    const {data, setData, post, errors, processing} = useForm<AppointmentForm>({
-        name: '',
+    const {data, setData, post, reset, errors, processing} = useForm<AppointmentForm>({
+        name: "",
         contact_number: "",
         email: "",
         has_viber: false,
@@ -181,6 +179,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
         e.preventDefault();
         post(route('appointment.store'), {
             preserveScroll: true,
+            onSuccess: () => reset()
         })
     }
 
@@ -246,7 +245,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                         <h5 className="card-title">Customer</h5>
                                         <div className="pb-4">
                                             <label className="label label-text"> Full name </label>
-                                            <input type="text" className="input" placeholder="John Doe"
+                                            <input type="text" className="input" placeholder="John Doe" value={data.name}
                                                    onChange={(e) => setData('name', e.target.value)}/>
                                             <span className="label">
                                                 <span className="label-text-alt">
@@ -258,6 +257,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                         <label className="label label-text">E-mail Address </label>
                                             <input type="email" className="input"
                                                    placeholder="example@email.com"
+                                                   value={data.email}
                                                    onChange={e => setData('email', e.target.value)}/>
                                             {errors.email && <span className="label-text-alt text-rose-500 font-semibold">*{errors.email}</span>}
 
@@ -265,6 +265,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                         <div className="pb-4">
                                             <label className="label label-text">Contact Number </label>
                                             <input type="text" className="input"
+                                                   value={data.contact_number}
                                                    placeholder="09xxxxxxxxx"
                                                    onChange={e => setData('contact_number', e.target.value)}/>
                                             {errors.contact_number && <span className="label-text-alt text-rose-500 font-semibold">*{errors.contact_number}</span>}
@@ -287,7 +288,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                             </label>
                                             <label className=" form-control flex items-center gap-1">
                                                 <input type="radio" name="radio-0"
-                                                       value="same-as-contact"
+                                                       value={data.viber}
                                                        checked={isSameNumber && data.has_viber}
                                                        onChange={(e) => {
                                                            setData('has_viber', true)
@@ -349,6 +350,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                         <div className="pb-4">
                                             <label className="label label-text">Model</label>
                                             <input type="text" className="input"
+                                                   value={data.model}
                                                    onChange={(e) => setData('model', e.target.value)}/>
                                             {errors.model && <span className="label-text-alt text-rose-500 font-semibold">*{errors.model}</span>}
 
@@ -357,6 +359,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                             <label className="label label-text">Plate Number</label>
                                             <input type="text"
                                                    className="input"
+                                                   value={data.plate_number}
                                                    onChange={(e) => setData('plate_number', e.target.value)}/>
                                             {errors.plate_number && <span className="label-text-alt text-rose-500 font-semibold">*{errors.plate_number}</span>}
 
@@ -365,6 +368,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                             <label className="label label-text">CS No</label>
                                             <input type="text"
                                                    className="input"
+                                                   value={data.cs_no}
                                                    onChange={(e) => setData('cs_no', e.target.value)}/>
                                             {errors.cs_no && <span className="label-text-alt text-rose-500 font-semibold">*{errors.cs_no}</span>}
 
@@ -419,12 +423,13 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                             <label className="label label-text">Selling Dealer</label>
                                             <input type="text"
                                                    className="input"
+                                                   value={data.selling_dealer}
                                                    onChange={(e) => setData('selling_dealer', e.target.value)}/>
                                             {errors.selling_dealer && <span className="label-text-alt text-rose-500 font-semibold">*{errors.selling_dealer}</span>}
 
                                         </div>
                                     </div>
-                                    <div className="col-span-2">
+                                    <div className="col-span-2 space-x-2">
                                         <button className="btn btn-primary" disabled={processing}>Create Appointment</button>
                                     </div>
                                 </form>

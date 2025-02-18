@@ -24,14 +24,14 @@ class ReceiptCollection extends JsonResource
     }
 
     public function statusLog($status){
-        if($status->start_time){
+        if($status->start_time && !$status->end_time){
             if($status->callout > 0){
                 return ['type' => 'blue', 'text' => 'The service advisor is calling you.'];
             }
             return ['type' => 'indigo', 'text' => 'You are now in line'];
         }
         else if($status->end_time){
-            return ['type' => 'green', 'text' => 'finished'];
+            return ['type' => 'green', 'text' => 'Finished'];
         }
         else{
             return null;

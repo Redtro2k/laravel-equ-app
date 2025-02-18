@@ -82,7 +82,7 @@ class AppointmentController extends Controller
                     'queue_number' => $this->generateTicket()
                 ]);
             }
-        return redirect()->back()->with('success', 'Successfully appointment');
+        return redirect()->route('appointment.index')->with('success', 'Successfully appointment');
 
     }
     public function addQueue(Request $request){

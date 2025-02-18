@@ -38,7 +38,7 @@ export default function Show({customer}: Props){
                         <div className="flex justify-center my-4">
                             <div className="flex flex-col items-center space-y-2">
                                 <h1 className="text-5xl font-extrabold">#(SA{customer.data.sa_assigned}){customer.data.queue_number}</h1>
-                                <UsersIcon className="w-3/4 text-gray-600"/>
+                                <UsersIcon className="w-3/4 text-g3ray-600"/>
                             </div>
                         </div>
                         <div className="flex flex-col items-center">
