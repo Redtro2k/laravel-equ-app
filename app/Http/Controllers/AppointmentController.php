@@ -43,6 +43,7 @@ class AppointmentController extends Controller
         ]);
     }
     public function store(AppointmentStoreRequest $request){
+        dd($request->validated());
         if($request->user()->cannot('store', Customer::class)){
             abort(403);
         }

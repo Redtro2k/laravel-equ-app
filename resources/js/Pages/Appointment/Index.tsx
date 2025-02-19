@@ -380,6 +380,10 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                                 <Flatpickr
                                                     id="flatpickr-default"
                                                     options={{
+                                                        disable: [
+                                                            (date) => date.getDay() === 0
+                                                        ],
+                                                        minDate: "today",
                                                         enableTime: true,
                                                         weekNumbers: true,
                                                         monthSelectorType: 'static',

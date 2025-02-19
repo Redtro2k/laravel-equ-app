@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Appointment;
 
+use App\Rules\AvailableDate;
 use App\Rules\LastCharacterNumberValidation;
 use App\Rules\UniquePlateNumber;
 use Illuminate\Foundation\Http\FormRequest;
@@ -41,7 +42,7 @@ class AppointmentStoreRequest extends FormRequest
         }
         if(request()->routeIs('appointment.store')){ // for appointment
             $roles = $roles->merge([
-                'date_time' => 'required|date', // Ensure 12-hour format with AM/PM,
+                'date_time' => ['required', 'date', new AvailableDate()], // Ensure 12-hour format with AM/PM,
                 'sa' => 'nullable|integer',
             ]);
         }
