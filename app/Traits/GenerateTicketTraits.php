@@ -9,9 +9,14 @@ use App\Models\User;
 trait GenerateTicketTraits
 {
     //
-    public function generateTicket(): int
+    public function generateTicket($isApp = false): int
     {
-        $get_customer_by_current_date = WalkIn::whereDate('created_at', Carbon::today())->latest()->first();
+        $get_customer_by_current_date = WalkIn::whereHas('appointmentVehicle', function($query) use($isApp){
+            $query->where('app_type', $isApp ? 'APPOINTMENT' : 'WALK-IN');
+        })
+        ->whereDate('created_at', Carbon::today())
+        ->latest()
+        ->first();
         $checkValue = $get_customer_by_current_date->queue_number ?? 0;
         return $checkValue + 1;
     }

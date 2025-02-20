@@ -10,6 +10,7 @@ class WalkIn extends Model
 {
     //
     protected $guarded = [];
+    protected $appends = ['type_queue_id'];
     public function vehicles(){
         return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
     }
@@ -28,7 +29,7 @@ class WalkIn extends Model
         return $this->morphMany(Logs::class,'logeable');
     }
 
-    public function appointmentLogs(){
-        return $this->hasOne(Appointment::class,'id','appointment_id');
+    public function getTypeQueueIdAttribute(){
+        return $this->appointmentVehicle->app_type;
     }
 }

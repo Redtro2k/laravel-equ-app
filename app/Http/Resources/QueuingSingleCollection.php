@@ -20,7 +20,7 @@ class QueuingSingleCollection extends JsonResource
             'title' => $this->vehicleWalkin()->exists()
                     ? 'Queue No.'.$this->formatTextTicket($this->vehicleWalkin->queue_number)
                     : 'Set Appointment by on '.$this->queuingDateFormat($this->app_datetime)->format('M j, Y g:i A'),
-            'appt_type' => $this->appointment,
+            'appt_type' => $this->app_type,
             'date_arrival' => $this->relationLoaded('vehicleWalkin') ?  $this->queuingDateFormat($this->vehicle->walkIn->date_arrived)->diffForHumans() : 'pending',
             'name' => $this->vehicle->customer->name,
             'plate' => strtoupper($this->vehicle->plate_number),
@@ -35,7 +35,6 @@ class QueuingSingleCollection extends JsonResource
         if (!$date) {
             return null;
         }
-
         return Carbon::createFromFormat('Y-m-d H:i:s', $date);
     }
 }

@@ -43,7 +43,6 @@ class AppointmentController extends Controller
         ]);
     }
     public function store(AppointmentStoreRequest $request){
-        dd($request->validated());
         if($request->user()->cannot('store', Customer::class)){
             abort(403);
         }
@@ -93,9 +92,13 @@ class AppointmentController extends Controller
             abort(404);
         }
         if(Carbon::now()->isSameDay($date)){
-            $newQueuing->walkIn()->create([
+            $newQueuing->update([
+                'qr_slug' => str::uuid(),
+            ]);
+            $newQueuing->vehicleWalkin()->create([
+                'vehicle_id' => $newQueuing->vehicle_id,
                 'date_arrived' => Carbon::now(),
-                'queue_number' => $this->generateTicket()
+                'queue_number' => $this->generateTicket(true)
             ]);
         }
     }

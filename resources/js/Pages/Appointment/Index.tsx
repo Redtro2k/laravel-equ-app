@@ -148,6 +148,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
     })
     const [isSameNumber, setIsSameNumber] = useState<boolean>(false);
 
+
     useEffect(() => {
         if (isSameNumber && data.has_viber) {
             setData((prevData) => ({
@@ -420,7 +421,6 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                                     </option>
                                                 </select>
                                                 {errors.sa && <span className="label-text-alt text-rose-500 font-semibold">*{errors.sa}</span>}
-
                                             </div>
                                         </div>
                                         <div className="pb-4">
@@ -554,7 +554,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                                 Close
                                             </button>
                                             {
-                                                select_appointment && select_appointment.data.date_arrival && isSameDay(select_appointment.data.appointment_date) ?
+                                                select_appointment && select_appointment.data.date_arrival && isSameDay(select_appointment.data.appointment_date) && select_appointment.data.qr_code ?
                                                     <Link
                                                         href={route('customer.qr.show', select_appointment.data.qr_code)}
                                                         className="btn btn-primary waves waves-primary"
@@ -565,7 +565,6 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                                     :
                                                 null
                                             }
-
                                         </div>
 
                                     </Dialog.Panel>

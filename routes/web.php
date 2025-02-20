@@ -40,23 +40,6 @@ Route::group(['prefix' => 'customer', 'as' => 'customer.'], function(){
     Route::resource('qr', QrGeneratorController::class, ['only' => ['show']]);
     Route::get('printed/{id}', [ReceiptController::class, 'show'])->name('printed');
 });
-Route::get('test', function(){
-//    $appointment = \App\Models\Queuing\Appointment::where('app_type', 'APPOINTMENT')
-//        ->get();
-    $givinDate = "2025-02-20 10:01:00";
-    $parseDate = Carbon::parse($givinDate)->ceilMinute(30);
-//
-//    $time_range = [
-//        'start' => $parseDate->format('H:i'),
-//        'end' => $parseDate->copy()->addMinutes(30)->format('H:i')
-//    ];
-//    dd($time_range);
-
-    $appointment = \App\Models\Queuing\Appointment::where('app_type', 'APPOINTMENT')
-        ->whereBetween('app_datetime', [$parseDate, $parseDate->copy()->addMinutes(30)])
-        ->count();
-    dd($appointment->count() >= 2);
-});
 
 
 require __DIR__.'/auth.php';
