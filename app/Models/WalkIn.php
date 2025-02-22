@@ -5,12 +5,14 @@ namespace App\Models;
 use App\Models\Queuing\Appointment;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log;
+use \App\Traits\TextFormatTraits;
+
 
 class WalkIn extends Model
 {
-    //
+    use TextFormatTraits;
     protected $guarded = [];
-    protected $appends = ['type_queue_id'];
+    protected $appends = ['queue_id_type'];
     public function vehicles(){
         return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
     }
@@ -29,7 +31,8 @@ class WalkIn extends Model
         return $this->morphMany(Logs::class,'logeable');
     }
 
-    public function getTypeQueueIdAttribute(){
-        return $this->appointmentVehicle->app_type;
+    public function getQueueIdTypeAttribute(){
+         $alias = $this->appointmentVehicle->app_type === 'WALK-IN' ? 'WAL' : 'APP';
+         return $alias.'-'.$this->formatTextTicket($this->queue_number);
     }
 }

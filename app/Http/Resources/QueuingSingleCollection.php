@@ -18,7 +18,7 @@ class QueuingSingleCollection extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->vehicleWalkin()->exists()
-                    ? 'Queue No.'.$this->formatTextTicket($this->vehicleWalkin->queue_number)
+                    ? 'Queue No. #'.$this->vehicleWalkin->queue_id_type
                     : 'Set Appointment by on '.$this->queuingDateFormat($this->app_datetime)->format('M j, Y g:i A'),
             'appt_type' => $this->app_type,
             'date_arrival' => $this->relationLoaded('vehicleWalkin') ?  $this->queuingDateFormat($this->vehicle->walkIn->date_arrived)->diffForHumans() : 'pending',

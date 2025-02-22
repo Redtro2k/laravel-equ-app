@@ -16,7 +16,7 @@ class QueueCollection extends JsonResource
     {
         return [
                 'appointment_id' => $this->id,
-                'queue_no' => $this->when($this->relationLoaded('vehicleWalkin'), fn() => $this->formatTextTicket($this->vehicleWalkin->queue_number)),
+                'queue_no' => $this->when($this->relationLoaded('vehicleWalkin'), fn() => $this->vehicleWalkin->queue_id_type),
                 'plate_number' => $this->when($this->relationLoaded('vehicle'), fn() => strtoupper($this->vehicle->plate_number)),
                 'cs' => $this->when($this->relationLoaded('vehicle'), fn() => strtoupper($this->vehicle->cs_no)),
                 'vehicle_model' => $this->when($this->relationLoaded('vehicle'), fn() => strtoupper($this->vehicle->model)),

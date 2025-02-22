@@ -11,7 +11,7 @@ class SACollection extends JsonResource
     {
         return [
             'name' =>  $this->name,
-            'group_no' => $this->sa->group_no,
+            'group_no' => 'Counter '.$this->sa->group_no,
         ];
     }
 }

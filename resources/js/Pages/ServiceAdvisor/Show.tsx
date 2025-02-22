@@ -77,7 +77,7 @@ export default function Show(){
     >
         <Toaster position="top-right" reverseOrder={false} />
         <div className="py-12 space-y-2">
-            <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl sm:px-6 lg:px-2">
                 <h2 className="font-bold uppercase pb-0.5 text-gray-800 pl-0.5">Today</h2>
                 <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <div className="bg-gray-900">
@@ -123,7 +123,7 @@ export default function Show(){
                             href={route('queue.next-customer', pages.current?.data?.appointment_id)}
                             as="button"
                             className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-rose-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
-                            disabled={pages.next === null || pages.referred_queue.data.length === 0}
+                            disabled={(pages.next === null || pages.referred_queue.data.length === 0) || pages.auth.user.is_active === 0}
                         >
                             <FontAwesomeIcon className="text-6xl py-4" icon={faForward} />
                             <p className="text-rose-600 font-bold">Next Customer</p>
@@ -158,22 +158,6 @@ export default function Show(){
                                 />
                             </div>
                         </div>
-                    </div>
-                    <div className="col-span-6 overflow-hidden rounded-lg bg-white shadow">
-                        <h1 className="pt-4 font-bold text-lg uppercase text-rose-600 pl-7 flex items-end space-x-1">
-                            <UsersIcon className="h-7"/>  <p>Customer Received</p></h1>
-                            <TableList
-                                headers={headers}
-                                records={pages.not_referred_queue.data}
-                            />
-                            <div className="pb-4 px-8">
-                                <Pagination
-                                    meta={pages.not_referred_queue.meta}
-                                    current={pages.not_referred_queue.meta.current_page}
-                                    lastPage={pages.not_referred_queue.meta.last_page}
-                                    from={pages.not_referred_queue.meta.from}
-                                />
-                            </div>
                     </div>
                 </div>
             </div>

@@ -14,9 +14,6 @@ use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Display the login view.
-     */
     public function create(): Response
     {
         return Inertia::render('Auth/Login', [
@@ -24,25 +21,19 @@ class AuthenticatedSessionController extends Controller
             'status' => session('status'),
         ]);
     }
-
-    /**
-     * Handle an incoming authentication request.
-     */
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
         $request->session()->regenerate();
         return redirect()->intended(route('dashboard', absolute: false));
     }
-
-    /**
-     * Destroy an authenticated session.
-     */
     public function destroy(Request $request): RedirectResponse
     {
         $user = User::find(auth()->user()->id);
         $user->is_active = 0; // Ensure you're setting an integer or boolean value.
         $user->save();
+
+        $user->assignRole('receptionist');
 //
         Auth::guard('web')->logout();
 //

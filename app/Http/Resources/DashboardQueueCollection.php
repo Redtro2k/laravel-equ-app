@@ -13,7 +13,7 @@ class DashboardQueueCollection extends JsonResource
     {
 
         return [
-            'title' => '(SA'.$this->appointmentVehicle->serviceAdvisor->sa->group_no.')#'.$this->formatTextTicket($this->queue_number). ' - '.strtoupper($this->vehicles->plate_number),
+            'title' => 'Counter ' .$this->appointmentVehicle->serviceAdvisor->sa->group_no.' - #'.$this->queue_id_type,
             'start' => $this->appointmentVehicle->app_datetime,
         ];
     }

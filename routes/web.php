@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ProfileController;
 use App\Models\User;
@@ -15,7 +14,7 @@ use Carbon\Carbon;
 
 Route::get('/', [QueueDasboardController::class , 'index'])->name('home');
 
-Route::get('/d`ashboard', function () {
+Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 

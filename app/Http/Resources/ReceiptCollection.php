@@ -15,7 +15,7 @@ class ReceiptCollection extends JsonResource
             'id' => $this->id,
             'type' => $this->app_type,
             'sa_assigned' => $this->serviceAdvisor->sa->group_no,
-            'queue_number' => $this->formatTextTicket($this->vehicleWalkin->queue_number),
+            'queue_number' => $this->vehicleWalkin->queue_id_type,
             'date_issued' => now()->format('M j, Y g:i A'),
             'qr_code' => route('customer.printed', $this->qr_slug),
             'customer_name' => $this->customer->name,

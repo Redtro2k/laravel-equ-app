@@ -176,6 +176,8 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
         if(flash?.warning) toast(flash.warning, {icon: "⚠️"});
     }, [flash]);
 
+    // console.log(select_appointment.data)
+
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         post(route('appointment.store'), {
@@ -488,7 +490,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                                     Arrived: {select_appointment ? select_appointment.data.date_arrival : null}</small>
                                             </div>
                                             {
-                                                select_appointment && select_appointment.data.appt_type === 'APPOINTMENT' && isSameDay(select_appointment.data.appointment_date)
+                                                select_appointment && select_appointment.data.appt_type === 'APPOINTMENT' && !select_appointment.data.qr_code && isSameDay(select_appointment.data.appointment_date)
                                                     ?
                                                 <Link href={route('add.queue')} method="post"
                                                       className="rounded bg-indigo-600 px-2 py-1 text-xs font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
