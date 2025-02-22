@@ -9,6 +9,7 @@ use App\Models\ServiceAdvisor;
 use App\Models\Vehicle;
 use App\Models\WalkIn;
 use App\Observers\AppointmentObserver;
+use App\Traits\Models\AppointmentTraits;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
@@ -19,7 +20,7 @@ use App\Traits\BaseModelTraits;
 class Appointment extends Model
 {
     //
-    use BaseModelTraits;
+    use BaseModelTraits, AppointmentTraits;
     protected $guarded = [];
 
     public function receptionist(){
@@ -69,10 +70,5 @@ class Appointment extends Model
     public function scopeCurrent($query)
     {
         return $query->orderBy('id', 'asc');
-    }
-    public function scopeNowQueries($query){
-        return $query
-            ->where('app_datetime', '>=', now()->startOfDay())
-            ->where('app_datetime', '<=', now()->endOfDay());
     }
 }
