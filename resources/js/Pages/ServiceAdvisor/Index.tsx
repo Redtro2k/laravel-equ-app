@@ -1,15 +1,32 @@
-import React from 'react'
+import React, {useEffect} from 'react'
+import toast, { Toaster } from 'react-hot-toast';
 
-export default function IndexPage(pages: any){
-    console.log(pages);
-    return <>
-        <table>
-            <thead className="border">
-                <th>Queue ID</th>
-                <th>Plate</th>
-                <th>Date Time</th>
-                <th>Action</th>
-            </thead>
-        </table>
-    </>
+interface IndexProps {
+    queries: any
+    current: any,
+    next: any,
+    flash?: {
+        success?: string,
+        warning?: string
+    }
+}
+
+
+
+export default function IndexPage({queries, current, next, flash}: IndexProps) {
+
+    useEffect(() => {
+        if (flash?.success) toast.success(flash.success);
+        if (flash?.warning) toast(flash.warning, { icon: "⚠️" });
+    }, [flash]);
+
+    return <AuthenticatedLayout
+        header={
+            <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                Dashboard
+            </h2>
+        }
+    >
+        <Toaster position="top-right" reverseOrder={false} />
+    </AuthenticatedLayout>
 }

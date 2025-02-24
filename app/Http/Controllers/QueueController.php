@@ -19,10 +19,22 @@ class QueueController extends Controller
             return abort(403);
         }
         sleep(1);
-        $current = request()->input('current');
-        $appointment = Appointment::nowQueries()->get();
-        return $appointment;
-//        return Inertia::render('ServiceAdvisor/Index');
+        $appointmentQueries = Appointment::nowQueries()
+            ->with('customer')->whereBetween('appointments.app_datetime', [now()->startOfDay(), now()->endOfDay()]);
+
+        $current = request()->filled('current')
+            ? (clone $appointmentQueries)->where('appointments.id', request('current'))->first()
+            : (clone $appointmentQueries)->first();
+
+        $next = (clone $appointmentQueries)->skip(1)->first();
+        $appointment = $appointmentQueries->get();
+
+
+        return Inertia::render('ServiceAdvisor/Index', [
+            'queries' => $appointment,
+            'current' => $current ?? abort(404),
+            'next' => $next ?? abort(404),
+        ]);
     }
     public function setActive($id){
         if(!auth()->check()){
