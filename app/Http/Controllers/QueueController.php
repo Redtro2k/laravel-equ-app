@@ -20,7 +20,8 @@ class QueueController extends Controller
         }
         sleep(1);
         $appointmentQueries = Appointment::nowQueries()
-            ->with('customer')->whereBetween('appointments.app_datetime', [now()->startOfDay(), now()->endOfDay()]);
+            ->with('vehicleWalkin', 'vehicle')
+            ->whereBetween('appointments.app_datetime', [now()->startOfDay(), now()->endOfDay()]);
 
         $current = request()->filled('current')
             ? (clone $appointmentQueries)->where('appointments.id', request('current'))->first()
@@ -29,11 +30,19 @@ class QueueController extends Controller
         $next = (clone $appointmentQueries)->skip(1)->first();
         $appointment = $appointmentQueries->get();
 
-
         return Inertia::render('ServiceAdvisor/Index', [
-            'queries' => $appointment,
-            'current' => $current ?? abort(404),
-            'next' => $next ?? abort(404),
+            'queries' => QueueCollection::collection($appointment),
+            'current' => new QueueCollection($current),
+            'next' => new QueueCollection($next),
+            'type_of_queues' => [
+                'walkin' => $appointmentQueries->walkInOnly()->count(),
+                'appointment' => $appointmentQueries->appointmentOnly()->count(),
+            ], // total of appointments  / total of walk-in
+            'today_total_queries' => $appointmentQueries->count(),
+            'today_queries_count' => [
+                'finished' => (clone $appointmentQueries)->finished()->count(),
+                'remaining' => (clone $appointmentQueries)->notFinished()->count(),
+            ],
         ]);
     }
     public function setActive($id){

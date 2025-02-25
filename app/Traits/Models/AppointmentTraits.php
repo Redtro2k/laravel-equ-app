@@ -24,4 +24,10 @@ trait AppointmentTraits
             END')
         ->orderBy('created_at', 'asc'); // Order by appointment time within priority group
     }
+    public function scopeAppointmentOnly(){
+        return self::where('appointments.app_type', 'APPOINTMENT');
+    }
+    public function scopeWalkInOnly(){
+        return self::where('appointments.app_type', 'WALK-IN');
+    }
 }
