@@ -15,8 +15,8 @@ class VehicleCollection extends JsonResource
     {
         return [
             'title' => $this->walkIn()->exists()
-                ? 'T-'.$this->walkIn->queue_id_type
-                : 'A-'.$this->plate_number,
+                ? $this->walkIn->queue_id_type
+                : $this->plate_number,
             'start' => $this->appointment->app_datetime,
             'end' => $this->appointment->app_end_datetime,
             'description' => 'the customer '. $this->customer->name . ' has been set an Appointment and assign to Service Advisor '.$this->appointment->serviceAdvisor->name.'.',

@@ -25,9 +25,9 @@ trait AppointmentTraits
         ->orderBy('created_at', 'asc'); // Order by appointment time within priority group
     }
     public function scopeAppointmentOnly(){
-        return self::where('appointments.app_type', 'APPOINTMENT');
+        return self::whereBetween('appointments.app_datetime', [now()->startOfDay(), now()->endOfDay()])->where('appointments.app_type', 'APPOINTMENT');
     }
     public function scopeWalkInOnly(){
-        return self::where('appointments.app_type', 'WALK-IN');
+        return self::whereBetween('appointments.app_datetime', [now()->startOfDay(), now()->endOfDay()])->where('appointments.app_type', 'WALK-IN');
     }
 }

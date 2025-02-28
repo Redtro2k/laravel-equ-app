@@ -23,17 +23,14 @@ class QueueController extends Controller
             ->with('vehicleWalkin', 'vehicle')
             ->whereBetween('appointments.app_datetime', [now()->startOfDay(), now()->endOfDay()]);
 
-        $current = request()->filled('current')
-            ? (clone $appointmentQueries)->where('appointments.id', request('current'))->first()
-            : (clone $appointmentQueries)->first();
-
+            $current = request()->filled('current')
+                ? (clone $appointmentQueries)->where('appointments.id', request('current'))->first()
+                : (clone $appointmentQueries)->first();
         $next = (clone $appointmentQueries)->skip(1)->first();
-        $appointment = $appointmentQueries->get();
-
         return Inertia::render('ServiceAdvisor/Index', [
-            'queries' => QueueCollection::collection($appointment),
-            'current' => new QueueCollection($current),
-            'next' => new QueueCollection($next),
+            'queries' => QueueCollection::collection($appointmentQueries->paginate(25)),
+            'current' => $current->count() !== 0 ? new QueueCollection($current) : null,
+            'next' => $next !== null ?? new QueueCollection($next),
             'type_of_queues' => [
                 'walkin' => $appointmentQueries->walkInOnly()->count(),
                 'appointment' => $appointmentQueries->appointmentOnly()->count(),
@@ -45,7 +42,7 @@ class QueueController extends Controller
             ],
         ]);
     }
-    public function setActive($id){
+    public function setActive($id = null){
         if(!auth()->check()){
             return abort(419);
         }
@@ -59,10 +56,15 @@ class QueueController extends Controller
         $user->is_active = true;
         $user->save();
 
-        $appointment = Appointment::find($id);
-        if($appointment){
-            $observer = new AppointmentObserver();
-            $observer->started($appointment);
+        if($id != null){
+            $appointment = Appointment::find($id);
+            if($appointment){
+                $appointment->update([
+                    'status' => 'processing'
+                ]);
+                $observer = new AppointmentObserver();
+                $observer->started($appointment);
+            }
         }
 
         return redirect()->back()->with('success', 'Your account is active.');

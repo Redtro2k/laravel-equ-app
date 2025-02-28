@@ -73,7 +73,8 @@ class AppointmentController extends Controller
                 'app_datetime' => $date,
                 'isPreferred' => $request->input('sa') !== 0,
                 'qr_slug' => Carbon::now()->isSameDay(Carbon::parse($date)) ? Str::uuid() : null,
-                'app_type' => Carbon::now()->isSameDay(Carbon::parse($date)) ? 'WALK-IN' : 'APPOINTMENT'
+                'app_type' => Carbon::now()->isSameDay(Carbon::parse($date)) ? 'WALK-IN' : 'APPOINTMENT',
+                'status' => Carbon::now()->isSameDay(Carbon::parse($date)) ? 'queue' : 'pending',
             ]);
             // identify the current date or not
             if(Carbon::now()->isSameDay($date)){
@@ -94,6 +95,7 @@ class AppointmentController extends Controller
         if(Carbon::now()->isSameDay($date)){
             $newQueuing->update([
                 'qr_slug' => str::uuid(),
+                'status' => 'queue'
             ]);
             $newQueuing->vehicleWalkin()->create([
                 'vehicle_id' => $newQueuing->vehicle_id,

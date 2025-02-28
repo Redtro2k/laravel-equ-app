@@ -1,6 +1,10 @@
 import { ChevronDownIcon, ChevronUpIcon, ArrowRightCircleIcon } from '@heroicons/react/20/solid';
 import {Link} from '@inertiajs/react'
 
+type Item = {
+    [key:string]: string | number;
+}
+
 type Props = {
     headers: string[];
     records: { [key: string]: string | number }[];
@@ -15,11 +19,12 @@ type Props = {
         linkable: string;
         text: string;
     }>
+    onRowSelect: (item: Item) => void;
 };
 
 const convertToHumanReadable = (str: string): string =>
     str.split('_').map(word => word[0].toUpperCase() + word.slice(1)).join(' ');
-export default function Table({ headers, records, filterBy, currentFilter, currentSort, button, emptySpan, currentTab, selectedTab }: Props) {
+export default function Table({ headers, records, filterBy, currentFilter, currentSort, button, emptySpan, currentTab, selectedTab, onRowSelect }: Props) {
 
     return (
         <div className="mt-8 flow-root">
@@ -71,7 +76,7 @@ export default function Table({ headers, records, filterBy, currentFilter, curre
                             </tr>
                         ) : (
                             records.map((record, i) => (
-                                <tr key={i} className={currentTab ?? "even:bg-gray-50"}>
+                                <tr key={i} className={currentTab ?? "even:bg-gray-50"} onClick={() => onRowSelect(record as Item)}>
                                     {headers.map((header, index) => (
                                         <td
                                             key={index}

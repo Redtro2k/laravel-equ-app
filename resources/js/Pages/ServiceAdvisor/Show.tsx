@@ -142,13 +142,13 @@ export default function Show(){
                         <h1 className="pt-4 font-bold text-lg uppercase text-rose-600 pl-7 flex items-end space-x-1">
                             <UsersIcon className="h-7"/>  <p>Customer who preferred you</p></h1>
                         <div className={pages.auth.user.is_active != 1 ? "opacity-50" : ""}>
-                            <TableList
-                                headers={headers}
-                                records={pages.referred_queue.data}
-                                emptySpan="No Customer for Today!"
-                                selectedTab="queue_no"
-                                currentTab={pages.current?.data?.queue_no}
-                            />
+                            {/*<TableList*/}
+                            {/*    headers={headers}*/}
+                            {/*    records={pages.referred_queue.data}*/}
+                            {/*    emptySpan="No Customer for Today!"*/}
+                            {/*    selectedTab="queue_no"*/}
+                            {/*    currentTab={pages.current?.data?.queue_no}*/}
+                            {/*/>*/}
                             <div className="pb-4 px-8">
                                 <Pagination
                                     meta={pages.referred_queue.meta}
