@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect, useState } from 'react'
 import toast, { Toaster } from 'react-hot-toast';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import {greetings} from '@/Utils/dateUtils'
@@ -6,14 +6,11 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPhone, faPlay, faStop} from "@fortawesome/free-solid-svg-icons";
 import {Link} from '@inertiajs/react'
 import TableList from "@/Components/TableList";
-import {UsersIcon} from "@heroicons/react/20/solid";
 import Modal from '@/Components/Modal'
 import Paginate from '@/Components/Paginate'
 import axios from "axios";
-import Skeleton, { SkeletonTheme } from 'react-loading-skeleton';
-
-
-
+import LoadingComponent from '@/Components/ui/Loading'
+import Badge from '@/Components/ui/badge'
 
 type TypeOfQueues = {
     walkin: number;
@@ -56,16 +53,36 @@ interface IndexProps {
 
 }
 
+interface SelectedItem{
+    appointment?: {
+        appointment_id: number;
+        queue_no: string;
+        app_type: string;
+        is_preferred: boolean;
+        plate_number: string;
+        time: string;
+        cs: number;
+        vehicle_model: string;
+    }
+    customer?: {
+        is_senior_or_pwd: boolean;
+        name: string;
+        contact_number: number;
+        email: string;
+        source: string;
+    }
+}
 
 export default function IndexPage({queries, current, next, flash, auth, today_total_queries, today_queries_count, type_of_queues}: IndexProps) {
     const headers: string[] = ['queue_no', 'plate_number', 'cs', 'vehicle_model', 'time'];
-    const [selectedItem, setSelectedItem] = useState(null);
-    const [loading, setLoading] = useState(false)
+    const [selectedItem, setSelectedItem] = useState<SelectedItem | null>(null);
+    const [loading, setLoading] = useState(false);
+
 
     const stats = [
         {name: 'Current', value: current?.data?.queue_no ?? '--' },
         {name: 'Next', value: next?.data?.queue_no ?? '--' },
-        {name: 'Appointment / Walk-In', value: type_of_queues.appointment, balance: type_of_queues.walkin},
+        {name: 'Appointment / Walk-In', value:type_of_queues.appointment , balance: type_of_queues.walkin},
         {name: 'Queries', value: today_queries_count.remaining ?? '--'},
     ]
 
@@ -87,8 +104,8 @@ export default function IndexPage({queries, current, next, flash, auth, today_to
         }
     }
     useEffect(() => {
-        console.log(loading)
-    }, [loading]);
+        console.log(selectedItem)
+    }, [selectedItem]);
 
     return <AuthenticatedLayout
         header={
@@ -101,27 +118,65 @@ export default function IndexPage({queries, current, next, flash, auth, today_to
     >
         <Toaster position="top-right" reverseOrder={false}/>
         <Modal show={!!selectedItem} onClose={() => setSelectedItem(null)}>
-            {
-                loading ? (<p>Loading...</p>) : selectedItem ? (
-                    <div>
-                        <h1>Existed</h1>
+            <div className="overflow-hidden bg-white shadow sm:rounded-lg">
+                <div className="px-4 py-6 sm:px-6">
+                    <div className="flex justify-between">
+                        <h3 className="text-base font-semibold leading-7 text-gray-900">View ID {selectedItem?.appointment?.queue_no}</h3>
+                        <div className="flex space-x-1">
+                            {selectedItem?.appointment?.app_type ? <Badge text={selectedItem?.appointment?.app_type ?? 'N/A'} size="sm" color="gray" /> : null}
+                            {selectedItem?.appointment?.is_preferred ? <Badge text="Preferred you" size="sm" color="green" /> : null}
+                            {selectedItem?.customer?.is_senior_or_pwd ? <Badge text="PWD" size="sm" color="blue" /> : null}
+                        </div>
                     </div>
-                ) : null
-            }
-            <div className="p-6">
-                <h2 className="text-lg font-medium text-gray-900">
-                    Are you sure you want to delete your account?
-                </h2>
+                    <p className="mt-1 max-w-2xl text-sm leading-6 text-gray-500">Customer details and application.</p>
+                </div>
+                <div className="mt-6 border-t border-gray-100">
+                    <dl className="divide-y divide-gray-100">
+                        <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+                            <dt className="text-sm font-medium leading-6 text-gray-900">Full name</dt>
+                            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{selectedItem?.customer?.name}
+                            </dd>
+                        </div>
+                        <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+                            <dt className="text-sm font-medium leading-6 text-gray-900">E-mail</dt>
+                            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{selectedItem?.customer?.email}
+                            </dd>
+                        </div>
+                        <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+                            <dt className="text-sm font-medium leading-6 text-gray-900">Contact Number</dt>
+                            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{selectedItem?.customer?.contact_number}</dd>
+                        </div>
+                        <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+                            <dt className="text-sm font-medium leading-6 text-gray-900">{selectedItem?.appointment?.app_type} DateTime</dt>
+                            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{selectedItem?.appointment?.time}</dd>
+                        </div>
+                        <div className="bg-white px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+                            <dt className="text-sm font-medium leading-6 text-gray-900">CS Number</dt>
+                            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{selectedItem?.appointment?.cs}</dd>
+                        </div>
+                        <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
+                            <dt className="text-sm font-medium leading-6 text-gray-900">About</dt>
+                            <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                                Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa
+                                consequat. Excepteur
+                                qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia
+                                proident. Irure nostrud
+                                pariatur mollit ad adipisicing reprehenderit deserunt qui eu.
+                            </dd>
+                        </div>
+                    </dl>
+                </div>
             </div>
         </Modal>
         <div className="grid grid-cols-2 grid-rows-3 gap-4 py-16 px-24">
             <div className="row-span-3">
-                <h2 className="font-bold uppercase pb-0.5 text-gray-800 pl-0.5"></h2>
                 <div className="overflow-hidden bg-gray-400 shadow-sm sm:rounded-lg">
                     <div className="bg-gray-900">
                         <div className="mx-auto max-w-7xl">
                             <div className="grid grid-cols-1 gap-px bg-white/5 sm:grid-cols-2 lg:grid-cols-4">
-                                <div className="col-span-5 bg-gray-800 py-1.5 text-center font-semibold text-white">Today</div>
+                                <div
+                                    className="col-span-5 bg-gray-800 py-1.5 text-center font-semibold text-white">Today
+                                </div>
                                 {stats.map((stat) => (
                                     <div key={stat.name} className="bg-gray-900 px-4 py-6 sm:px-6 lg:px-8">
                                         <p className="text-sm font-medium leading-6 text-gray-400">{stat.name}</p>
@@ -178,15 +233,18 @@ export default function IndexPage({queries, current, next, flash, auth, today_to
                     {loading ? (
                         // Maintain the same height while loading
                         <div className="h-[500px] flex items-center justify-center">
-                            <p>Loading</p>
+                            <div>
+                              <LoadingComponent />
+                            </div>
                         </div>
                     ) : (
                         <div>
-                            <h1 className="pt-4 font-bold text-lg uppercase text-rose-600 pl-7 flex items-end space-x-1">
-                                <UsersIcon className="h-7"/>
-                                <p>Customer who preferred you</p>
-                            </h1>
-                            <div className={auth.user.is_active != 1 ? "opacity-50" : ""}>
+                            <div className="pt-4 font-bold items-center flex-col uppercase text-rose-600 pl-7 flex space-x-1">
+                                Customer Queries For Today!
+                            </div>
+                            <div className="sweet-loading">
+                            </div>
+                            <div>
                                 <TableList
                                     headers={headers}
                                     records={queries.data}

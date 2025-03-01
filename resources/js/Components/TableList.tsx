@@ -76,7 +76,7 @@ export default function Table({ headers, records, filterBy, currentFilter, curre
                             </tr>
                         ) : (
                             records.map((record, i) => (
-                                <tr key={i} className={currentTab ?? "even:bg-gray-50"} onClick={() => onRowSelect(record as Item)}>
+                                <tr key={i} className={`${currentTab ?? "even:bg-gray-50"} hover:bg-rose-100 cursor-pointer`} onClick={() => onRowSelect(record as Item)}>
                                     {headers.map((header, index) => (
                                         <td
                                             key={index}

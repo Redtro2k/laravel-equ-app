@@ -26,10 +26,12 @@ class QueueController extends Controller
             $current = request()->filled('current')
                 ? (clone $appointmentQueries)->where('appointments.id', request('current'))->first()
                 : (clone $appointmentQueries)->first();
-        $next = (clone $appointmentQueries)->skip(1)->first();
+
+            $next = (clone $appointmentQueries)->skip(1)->first();
+
         return Inertia::render('ServiceAdvisor/Index', [
             'queries' => QueueCollection::collection($appointmentQueries->paginate(25)),
-            'current' => $current->count() !== 0 ? new QueueCollection($current) : null,
+            'current' =>  $current != null && $current->count() > 0 ? new QueueCollection($current) : null,
             'next' => $next !== null ?? new QueueCollection($next),
             'type_of_queues' => [
                 'walkin' => $appointmentQueries->walkInOnly()->count(),
