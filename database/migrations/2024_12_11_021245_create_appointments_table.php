@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('qr_slug')->nullable()->unique();
             $table->boolean('isPreferred')->default(false);
             $table->dateTime('app_datetime');
+            $table->enum('app_type', ['WALK-IN', 'APPOINTMENT']);
             $table->dateTime('app_end_datetime')->nullable();
             $table->unsignedBigInteger('vehicle_id');
             $table->foreign('vehicle_id')->references('id')->on('vehicles')->onDelete('cascade');

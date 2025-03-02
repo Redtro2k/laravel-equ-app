@@ -1,16 +1,12 @@
 <?php
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\ProfileController;
-use App\Models\User;
-use Illuminate\Foundation\Application;
 use App\Http\Controllers\QueueDasboardController;
 use App\Http\Controllers\QrGeneratorController;
 use App\Http\Controllers\QueueController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
-use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use App\Http\Controllers\ReceiptController;
-use Carbon\Carbon;
 
 Route::get('/', [QueueDasboardController::class , 'index'])->name('home');
 

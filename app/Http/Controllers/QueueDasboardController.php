@@ -11,12 +11,19 @@ class QueueDasboardController extends Controller
 {
     //e
     public function index(){
-        $sa = SACollection::collection(User::with('sa')->role('sa')->get());
+
+        $sa = User::with(['sa', 'appointments' => function($query){
+            $query->where('status', 'processing');
+        }])->role('sa')->get();
+
         $queue = WalkIn::with(['vehicles', 'appointmentVehicle'])
-            ->whereBetween('date_arrived', [Carbon::now('Asia/Manila')->startOfDay(), Carbon::now('Asia/Manila')->endOfDay()])
-            ->orderBy('queue_number', 'ASC')
-            ->get();
+            ->whereHas('appointmentVehicle', function ($query) {
+                $query->where('status', 'queue');
+            })
+        ->whereBetween('date_arrived', [Carbon::now('Asia/Manila')->startOfDay(), Carbon::now('Asia/Manila')->endOfDay()])
+        ->orderBy('queue_number', 'ASC')
+        ->get();
         $collection = DashboardQueueCollection::collection($queue);
-        return Inertia::render('Queue', ['sas' => $sa, 'queue' => $collection]);
+        return Inertia::render('Queue', ['sas' => SACollection::collection($sa), 'queue' => $collection]);
     }
 }

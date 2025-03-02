@@ -65,21 +65,22 @@ class AppointmentController extends Controller
             ]);
             $newAppointment = Vehicle::find($vehicle->id);
 
-            $date = Carbon::createFromFormat('Y-m-d h:i:s A', $request->date_time);
+            $date = Carbon::createFromFormat('Y-m-d h:i A', $request->date_time);
+            $now = Carbon::now()->setTimezone('Asia/Manila');
 
             $newAppointment->appointment()->create([
                 'advisor' => $this->generateSA($request->sa),
                 'appointment_by' => auth()->user()->id,
                 'app_datetime' => $date,
                 'isPreferred' => $request->input('sa') !== 0,
-                'qr_slug' => Carbon::now()->isSameDay(Carbon::parse($date)) ? Str::uuid() : null,
-                'app_type' => Carbon::now()->isSameDay(Carbon::parse($date)) ? 'WALK-IN' : 'APPOINTMENT',
-                'status' => Carbon::now()->isSameDay(Carbon::parse($date)) ? 'queue' : 'pending',
+                'qr_slug' => $now->isSameDay($date) ? Str::uuid() : null,
+                'app_type' => $now->isSameDay($date) ? 'WALK-IN' : 'APPOINTMENT',
+                'status' => $now->isSameDay($date) ? 'queue' : 'pending',
             ]);
             // identify the current date or not
-            if(Carbon::now()->isSameDay($date)){
+            if($now->isSameDay($date)){
                 $newAppointment->walkIn()->create([
-                    'date_arrived' => Carbon::now(),
+                    'date_arrived' => $now,
                     'queue_number' => $this->generateTicket()
                 ]);
             }

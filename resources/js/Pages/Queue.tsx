@@ -13,6 +13,7 @@ interface PageProps {
 interface SaUsers {
     name: string,
     group_no: number,
+    current_assigned_customer: string
 }
 const Queue: React.FC<PageProps> = ({sas, queue}) => {
     return <div>
@@ -22,7 +23,7 @@ const Queue: React.FC<PageProps> = ({sas, queue}) => {
                     <div key={index} className="flex flex-col bg-gray-400/5 p-8">
                         <dt className="text-sm font-semibold leading-6 text-gray-600">{user.group_no} - {user.name}</dt>
                         <dt className="order-first text-3xl font-semibold tracking-tight text-gray-900">
-                            <p>#0000</p>
+                            <p>{user.current_assigned_customer}</p>
                         </dt>
                 </div>
                 ))

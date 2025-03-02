@@ -19,6 +19,7 @@ import debounce from 'lodash/debounce';
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import toast, {Toaster} from "react-hot-toast";
+import flatpickr from "flatpickr";
 
 interface SaProps {
     name: string;
@@ -42,7 +43,7 @@ interface AppointmentForm {
     cs_no: string;
     selling_dealer?: string;
     //appointment
-    date_time: Date;
+    date_time: string;
     sa: number;
 }
 
@@ -143,11 +144,11 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
         cs_no: "",
         selling_dealer: "",
         //appointment
-        date_time: new Date(),
+        date_time: dayjs(new Date()).format('YYYY-MM-DD hh:mm A'),
         sa: 0
     })
     const [isSameNumber, setIsSameNumber] = useState<boolean>(false);
-
+    console.log()
 
     useEffect(() => {
         if (isSameNumber && data.has_viber) {
@@ -383,9 +384,9 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                                 <Flatpickr
                                                     id="flatpickr-default"
                                                     options={{
-                                                        disable: [
-                                                            (date) => date.getDay() === 0
-                                                        ],
+                                                        // disable: [
+                                                        //     (date) => date.getDay() === 0
+                                                        // ], disable sunday
                                                         minDate: "today",
                                                         enableTime: true,
                                                         weekNumbers: true,
@@ -398,6 +399,8 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                                     onChange={(selectedDates: Date[]) => {
                                                         // @ts-ignore
                                                         setData('date_time', dayjs(selectedDates[0]).format('YYYY-MM-DD hh:mm:ss A'))
+                                                        // setData('date_time', selectedDates[0])
+                                                        console.log(dayjs(selectedDates[0]).format('YYYY-MM-DD hh:mm:ss A'));
                                                     }}
                                                 />
                                                 {errors.date_time && <span className="label-text-alt text-rose-500 font-semibold">*{errors.date_time}</span>}

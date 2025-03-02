@@ -43,8 +43,8 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-//        $user->assignRole('sa');
-//        $user->sa()->create(['dealer' => 'TNE', 'group_no' => 2]);
+        $user->assignRole('sa');
+        $user->sa()->create(['dealer' => 'TNE', 'group_no' => 1]);
 
         event(new Registered($user));
 

@@ -2,21 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\WalkIn;
-use Carbon\Carbon;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Queuing\Appointment;
 use App\Http\Resources\QueueCollection;
 use App\Models\User;
 use App\Observers\AppointmentObserver;
-use Ramsey\Collection\Queue;
 
 class QueueController extends Controller
 {
     public function index(){
         if(!auth()->check()){
             return abort(403);
+        }
+        if(request()->filled('choose') && !auth()->user()->is_active){
+            return redirect()->back()->with('warning', 'you need to set your account active');
         }
         sleep(1);
         $appointmentQueries = Appointment::nowQueries()

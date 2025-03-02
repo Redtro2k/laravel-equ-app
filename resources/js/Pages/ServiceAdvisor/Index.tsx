@@ -4,13 +4,15 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import {greetings} from '@/Utils/dateUtils'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faPhone, faPlay, faStop} from "@fortawesome/free-solid-svg-icons";
-import {Link} from '@inertiajs/react'
+import {Link, router} from '@inertiajs/react'
 import TableList from "@/Components/TableList";
 import Modal from '@/Components/Modal'
 import Paginate from '@/Components/Paginate'
 import axios from "axios";
 import LoadingComponent from '@/Components/ui/Loading'
 import Badge from '@/Components/ui/badge'
+import PrimaryButton from '@/Components/PrimaryButton'
+import SecondaryButton from '@/Components/SecondaryButton'
 
 type TypeOfQueues = {
     walkin: number;
@@ -124,7 +126,7 @@ export default function IndexPage({queries, current, next, flash, auth, today_to
                         <h3 className="text-base font-semibold leading-7 text-gray-900">View ID {selectedItem?.appointment?.queue_no}</h3>
                         <div className="flex space-x-1">
                             {selectedItem?.appointment?.app_type ? <Badge text={selectedItem?.appointment?.app_type ?? 'N/A'} size="sm" color="gray" /> : null}
-                            {selectedItem?.appointment?.is_preferred ? <Badge text="Preferred you" size="sm" color="green" /> : null}
+                            {selectedItem?.appointment?.is_preferred ? <Badge text="Preferred you" size="sm" color="indigo" /> : null}
                             {selectedItem?.customer?.is_senior_or_pwd ? <Badge text="PWD" size="sm" color="blue" /> : null}
                         </div>
                     </div>
@@ -155,7 +157,7 @@ export default function IndexPage({queries, current, next, flash, auth, today_to
                             <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{selectedItem?.appointment?.cs}</dd>
                         </div>
                         <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
-                            <dt className="text-sm font-medium leading-6 text-gray-900">About</dt>
+                            <dt className="text-sm font-medium leading-6 text-gray-900">Remarks</dt>
                             <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
                                 Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa
                                 consequat. Excepteur
@@ -165,6 +167,14 @@ export default function IndexPage({queries, current, next, flash, auth, today_to
                             </dd>
                         </div>
                     </dl>
+                    <div className="flex space-x-2 py-2 pr-2 justify-end">
+                        <SecondaryButton onClick={() => setSelectedItem(null)}>Close</SecondaryButton>
+                        <PrimaryButton onClick={() => {
+                            let handle_id = selectedItem?.appointment?.appointment_id;
+                            setSelectedItem(null)
+                            router.get(`/queue?choose=${handle_id}`)
+                        }} disabled={!auth.user.is_active}>Select This Queue</PrimaryButton>
+                    </div>
                 </div>
             </div>
         </Modal>
@@ -172,7 +182,7 @@ export default function IndexPage({queries, current, next, flash, auth, today_to
             <div className="row-span-3">
                 <div className="overflow-hidden bg-gray-400 shadow-sm sm:rounded-lg">
                     <div className="bg-gray-900">
-                        <div className="mx-auto max-w-7xl">
+                    <div className="mx-auto max-w-7xl">
                             <div className="grid grid-cols-1 gap-px bg-white/5 sm:grid-cols-2 lg:grid-cols-4">
                                 <div
                                     className="col-span-5 bg-gray-800 py-1.5 text-center font-semibold text-white">Today

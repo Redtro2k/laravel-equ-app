@@ -5,8 +5,7 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage, router } from '@inertiajs/react';
 import { PropsWithChildren, ReactNode, useState, useEffect } from 'react';
 import {Transition} from "@headlessui/react";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import {faSpinner} from '@fortawesome/free-solid-svg-icons'
+import LoadingComponent from '@/Components/ui/Loading'
 
 
 interface AuthProps {
@@ -229,7 +228,7 @@ export default function Authenticated({
                         leaveTo="opacity-0"
                     >
                         <div className="fixed inset-0 flex items-center justify-center bg-white z-50">
-                            <div className="text-xl font-semibold animate-spin"><FontAwesomeIcon icon={faSpinner} /></div>
+                            <LoadingComponent />
                         </div>
                     </Transition>
                     {children}
