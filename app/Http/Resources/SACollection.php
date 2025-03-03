@@ -12,8 +12,8 @@ class SACollection extends JsonResource
         return [
             'name' =>  $this->name,
             'group_no' => 'Counter '.$this->sa->group_no,
-            'current_assigned_customer' => $this->appointments()
-                ->first()->vehicleWalkin->queue_id_type
+            'current_assigned_customer' => $this->appointments
+                ->first()->vehicleWalkin->queue_id_type ?? 'No Queue'
         ];
     }
 }

@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::table('appointments', function (Blueprint $table) {
             //
             $table->enum('status', ['pending', 'queue', 'processing', 'completed'])->default('pending')->after('app_type');
+            $table->text('comment')->nullable()->after('status');
         });
     }
 

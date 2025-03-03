@@ -65,6 +65,7 @@ interface SelectedItem{
         time: string;
         cs: number;
         vehicle_model: string;
+        comment: string
     }
     customer?: {
         is_senior_or_pwd: boolean;
@@ -75,7 +76,9 @@ interface SelectedItem{
     }
 }
 
+
 export default function IndexPage({queries, current, next, flash, auth, today_total_queries, today_queries_count, type_of_queues}: IndexProps) {
+
     const headers: string[] = ['queue_no', 'plate_number', 'cs', 'vehicle_model', 'time'];
     const [selectedItem, setSelectedItem] = useState<SelectedItem | null>(null);
     const [loading, setLoading] = useState(false);
@@ -126,7 +129,7 @@ export default function IndexPage({queries, current, next, flash, auth, today_to
                         <h3 className="text-base font-semibold leading-7 text-gray-900">View ID {selectedItem?.appointment?.queue_no}</h3>
                         <div className="flex space-x-1">
                             {selectedItem?.appointment?.app_type ? <Badge text={selectedItem?.appointment?.app_type ?? 'N/A'} size="sm" color="gray" /> : null}
-                            {selectedItem?.appointment?.is_preferred ? <Badge text="Preferred you" size="sm" color="indigo" /> : null}
+                            {selectedItem?.appointment?.is_preferred ? <Badge text="PREFERRED YOU" size="sm" color="indigo" /> : null}
                             {selectedItem?.customer?.is_senior_or_pwd ? <Badge text="PWD" size="sm" color="blue" /> : null}
                         </div>
                     </div>
@@ -159,11 +162,7 @@ export default function IndexPage({queries, current, next, flash, auth, today_to
                         <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
                             <dt className="text-sm font-medium leading-6 text-gray-900">Remarks</dt>
                             <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                Fugiat ipsum ipsum deserunt culpa aute sint do nostrud anim incididunt cillum culpa
-                                consequat. Excepteur
-                                qui ipsum aliquip consequat sint. Sit id mollit nulla mollit nostrud in ea officia
-                                proident. Irure nostrud
-                                pariatur mollit ad adipisicing reprehenderit deserunt qui eu.
+                                <div dangerouslySetInnerHTML={{__html: selectedItem?.appointment?.comment ?? ""}}/>
                             </dd>
                         </div>
                     </dl>

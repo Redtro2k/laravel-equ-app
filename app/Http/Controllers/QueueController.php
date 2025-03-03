@@ -44,12 +44,6 @@ class QueueController extends Controller
         ]);
     }
     public function setActive($id = null){
-        if(!auth()->check()){
-            return abort(419);
-        }
-        if(!auth()->user()->hasRole('sa')){
-            return abort(403);
-        }
         if(auth()->user()->is_active){
             return redirect()->back()->with('warning', 'Your account is already active.');
         }
@@ -57,7 +51,7 @@ class QueueController extends Controller
         $user->is_active = true;
         $user->save();
 
-        if($id != null){
+        if($id){
             $appointment = Appointment::find($id);
             if($appointment){
                 $appointment->update([
@@ -67,7 +61,6 @@ class QueueController extends Controller
                 $observer->started($appointment);
             }
         }
-
         return redirect()->back()->with('success', 'Your account is active.');
     }
     public function setInactive(){

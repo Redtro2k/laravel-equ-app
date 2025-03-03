@@ -13,12 +13,15 @@ class QueueDasboardController extends Controller
     public function index(){
 
         $sa = User::with(['sa', 'appointments' => function($query){
-            $query->where('status', 'processing');
+            $query
+                ->whereBetween('app_datetime', [now()->startOfDay(), now()->endOfDay()])
+                ->where('status', 'processing');
         }])->role('sa')->get();
 
         $queue = WalkIn::with(['vehicles', 'appointmentVehicle'])
             ->whereHas('appointmentVehicle', function ($query) {
-                $query->where('status', 'queue');
+                $query
+                    ->where('status', 'queue');
             })
         ->whereBetween('date_arrived', [Carbon::now('Asia/Manila')->startOfDay(), Carbon::now('Asia/Manila')->endOfDay()])
         ->orderBy('queue_number', 'ASC')

@@ -72,6 +72,7 @@ class AppointmentController extends Controller
                 'advisor' => $this->generateSA($request->sa),
                 'appointment_by' => auth()->user()->id,
                 'app_datetime' => $date,
+                'comment' => $request->comment,
                 'isPreferred' => $request->input('sa') !== 0,
                 'qr_slug' => $now->isSameDay($date) ? Str::uuid() : null,
                 'app_type' => $now->isSameDay($date) ? 'WALK-IN' : 'APPOINTMENT',

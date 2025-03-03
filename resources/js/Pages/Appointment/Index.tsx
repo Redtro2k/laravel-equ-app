@@ -19,7 +19,7 @@ import debounce from 'lodash/debounce';
 import Skeleton from 'react-loading-skeleton'
 import 'react-loading-skeleton/dist/skeleton.css'
 import toast, {Toaster} from "react-hot-toast";
-import flatpickr from "flatpickr";
+import TipTap from '@/Components/ui/TipTap'
 
 interface SaProps {
     name: string;
@@ -45,6 +45,7 @@ interface AppointmentForm {
     //appointment
     date_time: string;
     sa: number;
+    comment: string;
 }
 
 interface SaProps {
@@ -93,17 +94,11 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
     });
 
     const [isLoading, setIsLoading] = React.useState(false);
-    const props = usePage().props;
 
     const url: string = usePage().url as string;
     //search by date
     const [baseUrl, query] = url.split('?')
     const uri = new URLSearchParams(query)
-    const [search, setSearch] = useState<string>(uri.get('search') || '');
-
-    const eventsForSelectedDate = events.filter(
-        (event) => event.start.startsWith(selectedDate)
-    );
 
 
     const updateResult = useCallback(
@@ -129,7 +124,6 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
         setShowModel(true)
     }
 
-
     const {data, setData, post, reset, errors, processing} = useForm<AppointmentForm>({
         name: "",
         contact_number: "",
@@ -145,11 +139,10 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
         selling_dealer: "",
         //appointment
         date_time: dayjs(new Date()).format('YYYY-MM-DD hh:mm A'),
-        sa: 0
+        sa: 0,
+        comment: ""
     })
     const [isSameNumber, setIsSameNumber] = useState<boolean>(false);
-    console.log()
-
     useEffect(() => {
         if (isSameNumber && data.has_viber) {
             setData((prevData) => ({
@@ -183,9 +176,11 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
         e.preventDefault();
         post(route('appointment.store'), {
             preserveScroll: true,
-            onSuccess: () => reset()
+            onSuccess: () => {reset(); setData('comment', '')}
         })
     }
+
+
 
     return (
         <AuthenticatedLayout
@@ -384,9 +379,9 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                                 <Flatpickr
                                                     id="flatpickr-default"
                                                     options={{
-                                                        // disable: [
-                                                        //     (date) => date.getDay() === 0
-                                                        // ], disable sunday
+                                                        disable: [
+                                                            (date) => date.getDay() === 0
+                                                        ],
                                                         minDate: "today",
                                                         enableTime: true,
                                                         weekNumbers: true,
@@ -435,10 +430,13 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
                                                    value={data.selling_dealer}
                                                    onChange={(e) => setData('selling_dealer', e.target.value)}/>
                                             {errors.selling_dealer && <span className="label-text-alt text-rose-500 font-semibold">*{errors.selling_dealer}</span>}
-
+                                        </div>
+                                        <div className="pb-2">
+                                            <label className="label label-text">Remarks</label>
+                                            <TipTap content={data.comment} onChange={(e) => setData('comment', e)}/>
                                         </div>
                                     </div>
-                                    <div className="col-span-2 space-x-2">
+                                    <div className="col-span-2 space-x-2 flex justify-end">
                                         <button className="btn btn-primary" disabled={processing}>Create Appointment</button>
                                     </div>
                                 </form>

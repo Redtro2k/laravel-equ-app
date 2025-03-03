@@ -38,6 +38,7 @@ class AppointmentStoreRequest extends FormRequest
                 'plate_number' => ['required', new UniquePlateNumber(), new LastCharacterNumberValidation()],
                 'cs_no' => 'required|string',
                 'selling_dealer' => 'nullable|string',
+                'comment' => 'nullable|string',
             ]);
         }
         if(request()->routeIs('appointment.store')){ // for appointment

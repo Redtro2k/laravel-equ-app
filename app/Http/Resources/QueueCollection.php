@@ -22,7 +22,8 @@ class QueueCollection extends JsonResource
                 'cs' => $this->when($this->relationLoaded('vehicle'), fn() => strtoupper($this->vehicle->cs_no)),
                 'vehicle_model' => $this->when($this->relationLoaded('vehicle'), fn() => strtoupper($this->vehicle->model)),
                 'time' => $this->app_datetime ? Carbon::parse($this->app_datetime)->format('g:i A') : null,
-                'is_preferred' => $this->isPreferred
+                'is_preferred' => $this->isPreferred,
+                'comment' => $this->comment
             ];
     }
 }

@@ -1,0 +1,18 @@
+.editor-container {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.tiptap {
+    min-height: 90px;
+    max-height: 100px; /* Enables scrolling after 300px */
+    overflow-y: auto;  /* Scroll when content is long */
+    padding: 10px;
+    border-radius: 5px;
+    border: none; /* Removes background border */
+}
+
+.tiptap:focus {
+    outline: none;
+}

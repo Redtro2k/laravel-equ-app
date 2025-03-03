@@ -49,4 +49,8 @@ class User extends Authenticatable
     public function appointments(){
         return $this->hasMany(Appointment::class, 'advisor', 'id');
     }
+    public function scopegetAllActive(): void
+    {
+        self::where('is_active', 1);
+    }
 }
