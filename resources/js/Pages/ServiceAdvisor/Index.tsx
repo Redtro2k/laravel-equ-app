@@ -108,9 +108,6 @@ export default function IndexPage({queries, current, next, flash, auth, today_to
             setLoading(false)
         }
     }
-    useEffect(() => {
-        console.log(selectedItem)
-    }, [selectedItem]);
 
     return <AuthenticatedLayout
         header={
@@ -162,7 +159,8 @@ export default function IndexPage({queries, current, next, flash, auth, today_to
                         <div className="bg-gray-50 px-4 py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-3">
                             <dt className="text-sm font-medium leading-6 text-gray-900">Remarks</dt>
                             <dd className="mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
-                                <div dangerouslySetInnerHTML={{__html: selectedItem?.appointment?.comment ?? ""}}/>
+                                {selectedItem?.appointment?.comment ?
+                                    <div dangerouslySetInnerHTML={{__html: selectedItem?.appointment?.comment ?? ""}}/> : ""}
                             </dd>
                         </div>
                     </dl>

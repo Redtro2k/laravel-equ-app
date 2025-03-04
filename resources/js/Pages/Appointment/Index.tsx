@@ -176,6 +176,7 @@ const Appointment: React.FC<PageProps> = ({ auth, Sa, Vehicles, select_appointme
         e.preventDefault();
         post(route('appointment.store'), {
             preserveScroll: true,
+            onBefore: () => confirm('Are you sure you want to add this Queue?'),
             onSuccess: () => {reset(); setData('comment', '')}
         })
     }

@@ -7,6 +7,7 @@ use App\Http\Controllers\QueueController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ReceiptController;
+use App\Http\Controllers\ExportController;
 
 Route::get('/', [QueueDasboardController::class , 'index'])->name('home');
 
@@ -29,6 +30,10 @@ Route::middleware('auth')->group(function () {
         Route::get('sa-active{id?}', 'setActive')->name('set-active');
         Route::get('sa-inactive', 'setInactive')->name('set-inactive');
         Route::get('call-again/{id}', 'callAgain')->name('call-again');
+    });
+
+    Route::controller(ExportController::class)->group(function () {
+        Route::get('up-appointment', 'upAppointments')->middleware('role:receptionist')->name('upcomming-appointment');
     });
 });
 Route::group(['prefix' => 'customer', 'as' => 'customer.'], function(){

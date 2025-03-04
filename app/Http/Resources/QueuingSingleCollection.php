@@ -15,14 +15,13 @@ class QueuingSingleCollection extends JsonResource
 
     public function toArray(Request $request): array
     {
-        $now = Carbon::now()->setTimezone('Asia/Manila');
         return [
             'id' => $this->id,
             'title' => $this->vehicleWalkin()->exists()
                     ? 'Queue No. #'.$this->vehicleWalkin->queue_id_type
                     : 'Set Appointment by on '.$this->queuingDateFormat($this->app_datetime)->format('M j, Y g:i A'),
             'appt_type' => $this->app_type,
-            'date_arrival' => $this->relationLoaded('vehicleWalkin') ?  $this->queuingDateFormat($this->vehicle->walkIn->date_arrived)->diffForHumans($now) : 'pending',
+            'date_arrival' => $this->relationLoaded('vehicleWalkin') ?  $this->queuingDateFormat($this->vehicle->walkIn->date_arrived)->diffForHumans(now()) : 'pending',
             'name' => $this->vehicle->customer->name,
             'plate' => strtoupper($this->vehicle->plate_number),
             'cs_no' => strtoupper($this->vehicle->cs_no),
@@ -36,6 +35,6 @@ class QueuingSingleCollection extends JsonResource
         if (!$date) {
             return null;
         }
-        return Carbon::createFromFormat('Y-m-d H:i:s', $date)->setTimezone('Asia/Manila');
+        return Carbon::createFromFormat('Y-m-d H:i:s', $date);
     }
 }

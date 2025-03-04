@@ -43,9 +43,6 @@ class AppointmentController extends Controller
         ]);
     }
     public function store(AppointmentStoreRequest $request){
-        if($request->user()->cannot('store', Customer::class)){
-            abort(403);
-        }
             $customer = Customer::updateOrCreate(
                 ['email' => $request->email],[
                 'name' => $request->name,
@@ -66,7 +63,7 @@ class AppointmentController extends Controller
             $newAppointment = Vehicle::find($vehicle->id);
 
             $date = Carbon::createFromFormat('Y-m-d h:i A', $request->date_time);
-            $now = Carbon::now()->setTimezone('Asia/Manila');
+            $now = Carbon::now();
 
             $newAppointment->appointment()->create([
                 'advisor' => $this->generateSA($request->sa),

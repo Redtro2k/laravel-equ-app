@@ -32,8 +32,6 @@ class AuthenticatedSessionController extends Controller
         $user = User::find(auth()->user()->id);
         $user->is_active = 0; // Ensure you're setting an integer or boolean value.
         $user->save();
-
-        $user->assignRole('receptionist');
 //
         Auth::guard('web')->logout();
 //

@@ -29,7 +29,6 @@ trait GenerateTicketTraits
                 }
                 ])
                 ->role('sa')
-                ->where('is_active', 1)
                 ->get();
             // get user SA where active are zero
             if($advisor->count() > 0){
