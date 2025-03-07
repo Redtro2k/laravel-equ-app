@@ -3,7 +3,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout'
 import {greetings} from '@/Utils/dateUtils'
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faPhone, faPlay, faStop} from "@fortawesome/free-solid-svg-icons";
+import {faForward, faPhone, faPlay, faStop} from "@fortawesome/free-solid-svg-icons";
 import {Link, router} from '@inertiajs/react'
 import TableList from "@/Components/TableList";
 import Modal from '@/Components/Modal'
@@ -231,6 +231,15 @@ export default function IndexPage({queries, current, next, flash, auth, today_to
                         >
                             <FontAwesomeIcon className="text-6xl py-4" icon={faStop} />
                             <p className="text-rose-600 font-bold">Stop</p>
+                        </Link>
+                        <Link
+                            href={route('queue.next-customer', current?.data?.appointment_id)}
+                            as="button"
+                            className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-rose-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
+                            disabled={next === null || auth.user.is_active === 0}
+                        >
+                            <FontAwesomeIcon className="text-6xl py-4" icon={faForward} />
+                            <p className="text-rose-600 font-bold">Next Customer</p>
                         </Link>
                     </div>
                     </div>

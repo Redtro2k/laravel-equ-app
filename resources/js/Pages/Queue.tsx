@@ -3,6 +3,7 @@ import FullCalendar from "@fullcalendar/react";
 import listPlugin from "@fullcalendar/list";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from '@fullcalendar/interaction'
+import SpeechApp from '@/Components/ui/Speech'
 
 interface PageProps {
     sas: {
@@ -29,23 +30,24 @@ const Queue: React.FC<PageProps> = ({sas, queue}) => {
                 ))
             }
         </div>
-        <FullCalendar
-            plugins={[listPlugin, dayGridPlugin, interactionPlugin]}
-            headerToolbar={{
-                left: '',
-                center: 'title', // Display the title only
-                right: ''
-            }}
-            titleFormat={{
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric' // Display the full date format
-            }}
-            height={750}
-            initialDate={new Date()} // Focus on the current date
-            initialView="listDay" // Sets the initial view to listWeek
-            events={queue.data}
-        />
+            <SpeechApp />
+            <FullCalendar
+                plugins={[listPlugin, dayGridPlugin, interactionPlugin]}
+                headerToolbar={{
+                    left: '',
+                    center: 'title', // Display the title only
+                    right: ''
+                }}
+                titleFormat={{
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric' // Display the full date format
+                }}
+                height={750}
+                initialDate={new Date()} // Focus on the current date
+                initialView="listDay" // Sets the initial view to listWeek
+                events={queue.data}
+            />
     </div>
 }
 

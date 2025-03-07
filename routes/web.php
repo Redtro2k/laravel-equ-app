@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ReceiptController;
 use App\Http\Controllers\ExportController;
+use App\Events\QueueCallEvent;
 
 Route::get('/', [QueueDasboardController::class , 'index'])->name('home');
 
@@ -35,11 +36,17 @@ Route::middleware('auth')->group(function () {
     Route::controller(ExportController::class)->group(function () {
         Route::get('up-appointment', 'upAppointments')->middleware('role:receptionist')->name('upcomming-appointment');
     });
+
+    Route::get('pusher', function(){
+        event(new QueueCallEvent("Next customer, please proceed to counter 3.1"));
+        return response()->json(['status' => 'Message queued']);
+    });
 });
 Route::group(['prefix' => 'customer', 'as' => 'customer.'], function(){
     Route::resource('qr', QrGeneratorController::class, ['only' => ['show']]);
     Route::get('printed/{id}', [ReceiptController::class, 'show'])->name('printed');
 });
+
 
 
 require __DIR__.'/auth.php';

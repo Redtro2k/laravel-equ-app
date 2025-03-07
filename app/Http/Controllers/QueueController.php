@@ -20,6 +20,7 @@ class QueueController extends Controller
         sleep(1);
         $appointmentQueries = Appointment::nowQueries()
             ->with('vehicleWalkin', 'vehicle')
+            ->where('appointments.status', 'queue')
             ->whereBetween('appointments.app_datetime', [now()->startOfDay(), now()->endOfDay()]);
 
             $current = request()->filled('current')
