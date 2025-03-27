@@ -1,56 +1,52 @@
 import React, {useEffect, useMemo, useState} from "react";
-import { useSpeech } from "react-text-to-speech";
+import { useQueue, useSpeech } from "react-text-to-speech";
 import Pusher from "pusher-js"
 
 interface SpeechProps {
-    desc: string;
+    message: string;
 }
 export default function SpeechApp() {
-    const news:[] = []
-
-    const [queue, setQueue] = useState<string[]>([]);
+    const [announcement, setAnnouncement] = useState<{ message: string }[]>([]);
+    const {
+        queue,
+    } = useQueue();
     useEffect(() => {
-        console.log("Connecting to Pusher...");
-
         const pusher = new Pusher(import.meta.env.VITE_PUSHER_APP_KEY, {
             cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
             forceTLS: true,  // Ensure secure connection
         });
         pusher.subscribe('channel-queue').bind('queueCall', (data: any) => {
-            console.log(data);
+            setAnnouncement(prev => [...prev, data]);
         })
+        return () => pusher.unsubscribe('channel-queue');
     }, []);
-    // @ts-ignore
+    useEffect(() => {
+        setAnnouncement(prev =>
+            prev.filter(item => queue.some(newQueue => newQueue.text === item.message))
+        );
+    }, [queue]);
     return <div>
         <div style={{display: "flex", flexDirection: "column", rowGap: "1rem"}}>
-            {news.length > 0 ? (
-                news.map((desc, index) => <SpeechItem key={index} desc={desc}/>)
-            ) : (
-                <p>No news available.</p> // Fallback message when empty
-            )}
+            {
+                announcement.map((item: any, index) => <SpeechItem key={index} message={item.message}/>)
+            }
         </div>
     </div>;
 }
 
-function SpeechItem({desc}: SpeechProps) {
+function SpeechItem({message}: SpeechProps) {
     const text = useMemo(
         () => (
             <>
-                <div style={{marginBottom: "0.5rem"}}>{desc}</div>
+                <div style={{marginBottom: "0.5rem"}}>{message}</div>
             </>
         ),
-        [desc]
+        [message]
     );
 
-    const {} = useSpeech({
-        text, preserveUtteranceQueue: true, autoPlay: true, pitch: 1, rate: 0.8,
-        voiceURI: "Microsoft Heera - English (India)",
-        onQueueChange: (query) => {
-            console.log(query)
-        }});
-
-    return (
-        <div>
-        </div>
-    )
+    const {isInQueue} = useSpeech({
+        text, preserveUtteranceQueue: true, autoPlay: true, pitch: 1, rate: 0.6,
+        voiceURI:"Microsoft Heera - English (India)",
+    });
+    return <></>;
 }

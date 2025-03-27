@@ -2,10 +2,13 @@
 namespace App\Traits;
 
 trait BaseModelTraits{
-    public static function next($id, $column = 'id'){
-        return static::where($column, '>', $id)
-            ->orderBy('created_at', 'desc')
-            ->first();
+    public static function next($id, $column = 'id', $singleRow = true){
+         $query = static::where($column, '>', $id)
+            ->orderBy('created_at', 'desc');
+        if($singleRow){
+            return $query->first();
+        }
+        return $query;
     }
 
     public static function prev($id, $column = 'id'){

@@ -19,22 +19,18 @@ class ReceiptCollection extends JsonResource
             'date_issued' => now()->format('M j, Y g:i A'),
             'qr_code' => route('customer.printed', $this->qr_slug),
             'customer_name' => $this->customer->name,
-            'status' => $this->log()->exists() ? $this->statusLog($this->log) : ['type' => 'yellow','text' => 'You’re in the queue—please wait.']
+            'status' => $this->statusLog($this->status)
         ];
     }
 
-    public function statusLog($status){
-        if($status->start_time && !$status->end_time){
-            if($status->callout > 0){
-                return ['type' => 'blue', 'text' => 'The service advisor is calling you.'];
-            }
-            return ['type' => 'indigo', 'text' => 'You are now in line'];
-        }
-        else if($status->end_time){
-            return ['type' => 'green', 'text' => 'Finished'];
-        }
-        else{
-            return null;
-        }
+    public function statusLog($status): array
+    {
+        return match($status){
+            "pending" => ['type' => 'yellow', 'text' => 'Please go to the receptionist and ask for a queue ticket.'],
+            "queue" => ['type' => 'yellow','text' => 'You’re in the queue—please wait.'],
+            "processing" => ['type' => 'indigo', 'text' => 'You are now in line'],
+            "completed" => ['type' => 'green', 'text' => 'Congratulations!'],
+            default => ['type' => 'red', 'text' => 'error...'],
+        };
     }
 }

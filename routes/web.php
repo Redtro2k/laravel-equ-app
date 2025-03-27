@@ -38,7 +38,7 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('pusher', function(){
-        event(new QueueCallEvent("Next customer, please proceed to counter 3.1"));
+        event(new QueueCallEvent("Ticket WAL-00001, P l a t e 2 3 please proceed to counter 1"));
         return response()->json(['status' => 'Message queued']);
     });
 });

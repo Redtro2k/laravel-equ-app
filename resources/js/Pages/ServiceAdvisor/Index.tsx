@@ -83,7 +83,6 @@ export default function IndexPage({queries, current, next, flash, auth, today_to
     const [selectedItem, setSelectedItem] = useState<SelectedItem | null>(null);
     const [loading, setLoading] = useState(false);
 
-
     const stats = [
         {name: 'Current', value: current?.data?.queue_no ?? '--' },
         {name: 'Next', value: next?.data?.queue_no ?? '--' },
@@ -108,7 +107,6 @@ export default function IndexPage({queries, current, next, flash, auth, today_to
             setLoading(false)
         }
     }
-
     return <AuthenticatedLayout
         header={
             <div>
@@ -233,7 +231,7 @@ export default function IndexPage({queries, current, next, flash, auth, today_to
                             <p className="text-rose-600 font-bold">Stop</p>
                         </Link>
                         <Link
-                            href={route('queue.next-customer', current?.data?.appointment_id)}
+                            href={current?.data?.appointment_id ? route('queue.next-customer', current.data.appointment_id) : '#'}
                             as="button"
                             className="rounded-md bg-white px-3.5 py-2.5 text-sm font-semibold text-rose-500 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
                             disabled={next === null || auth.user.is_active === 0}
