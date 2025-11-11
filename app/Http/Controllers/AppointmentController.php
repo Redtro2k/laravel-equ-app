@@ -42,7 +42,8 @@ class AppointmentController extends Controller
             'select_appointment' => request()->filled('search') ? new QueuingSingleCollection($selectAppointment) : null
         ]);
     }
-    public function store(AppointmentStoreRequest $request){
+    public function store(AppointmentStoreRequest $request): \Illuminate\Http\RedirectResponse
+    {
             $customer = Customer::updateOrCreate(
                 ['email' => $request->email],[
                 'name' => $request->name,
@@ -81,11 +82,13 @@ class AppointmentController extends Controller
                     'date_arrived' => $now,
                     'queue_number' => $this->generateTicket()
                 ]);
+
             }
         return redirect()->route('appointment.index')->with('success', 'Successfully appointment');
 
     }
-    public function addQueue(Request $request){
+    public function addQueue(Request $request)
+    {
         $newQueuing = Appointment::find($request->id);
         $date = Carbon::parse($request->app_date);
         if(!$newQueuing){

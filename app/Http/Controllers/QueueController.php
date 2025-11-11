@@ -29,6 +29,21 @@ class QueueController extends Controller
                 : (clone $appointmentQueries)->first();
             $next = (clone $appointmentQueries)->skip(1)->first();
 
+            $arr = array([
+                'queries' => QueueCollection::collection($appointmentQueries->paginate(25)),
+                'current' =>  $current != null && $current->count() > 0 ? new QueueCollection($current) : null,
+                'next' => $next != null ? new QueueCollection($next) : null,
+                'type_of_queues' => [
+                    'appointment' => $appointmentQueries->appointmentOnly()->count(),
+                    'walkin' => $appointmentQueries->walkInOnly()->count(),
+                ], // total of appointments  / total of walk-in
+                'today_total_queries' => $appointmentQueries->count(),
+                'today_queries_count' => [
+                    'finished' => (clone $appointmentQueries)->finished()->count(),
+                    'remaining' => (clone $appointmentQueries)->notFinished()->count(),
+                ],
+            ]);
+
         return Inertia::render('ServiceAdvisor/Index', [
             'queries' => QueueCollection::collection($appointmentQueries->paginate(25)),
             'current' =>  $current != null && $current->count() > 0 ? new QueueCollection($current) : null,
@@ -66,7 +81,8 @@ class QueueController extends Controller
         }
         return redirect()->back()->with('success', 'Your account is active.');
     }
-    public function setInactive(){
+    public function setInactive(): \Illuminate\Http\RedirectResponse
+    {
         if(!auth()->check()){
             return abort(419);
         }

@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QueueDasboardController;
 use App\Http\Controllers\QrGeneratorController;
 use App\Http\Controllers\QueueController;
+use App\Http\Controllers\QueueVideoController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\ReceiptController;
@@ -37,15 +38,26 @@ Route::middleware('auth')->group(function () {
         Route::get('up-appointment', 'upAppointments')->middleware('role:receptionist')->name('upcomming-appointment');
     });
 
-    Route::get('pusher', function(){
-        event(new QueueCallEvent("Ticket WAL-00001, P l a t e 2 3 please proceed to counter 1"));
-        return response()->json(['status' => 'Message queued']);
-    });
+//    Route::get('pusher', function(){
+//        event(new QueueCallEvent("Ticket WAL-00001, P l a t e 2 3 please proceed to counter 1"));
+//        return response()->json(['status' => 'Message queued']);
+//    });
 });
 Route::group(['prefix' => 'customer', 'as' => 'customer.'], function(){
     Route::resource('qr', QrGeneratorController::class, ['only' => ['show']]);
     Route::get('printed/{id}', [ReceiptController::class, 'show'])->name('printed');
 });
+
+//Route::get('/queue', [QueueVideoController::class, 'queuePage'])->name('queue.page');
+//
+//// Video Management Page
+//Route::get('/queue-video-select', [QueueVideoController::class, 'selectPage'])->name('queue-video.select');
+//
+//// Upload new Video
+//Route::post('/queue-video', [QueueVideoController::class, 'store'])->name('queue-video.store');
+//
+//// Toggle Display ON/OFF
+//Route::patch('/queue-video/{queueVideo}', [QueueVideoController::class, 'updateDisplay'])->name('queue-video.update-display');
 
 
 

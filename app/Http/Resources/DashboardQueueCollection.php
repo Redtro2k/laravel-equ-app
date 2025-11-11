@@ -14,6 +14,7 @@ class DashboardQueueCollection extends JsonResource
 
         return [
             'title' => 'Counter ' .$this->appointmentVehicle->serviceAdvisor->sa->group_no.' - #'.$this->queue_id_type,
+            'plate' => $this->whenLoaded('vehicles', fn() => $this->vehicles->plate_number),
             'start' => $this->appointmentVehicle->app_datetime,
         ];
     }

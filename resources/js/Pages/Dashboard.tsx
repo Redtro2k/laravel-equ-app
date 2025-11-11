@@ -11,7 +11,6 @@ interface Authenticated {
 
 export default function Dashboard() {
     const auth  = usePage<{auth: Authenticated}>().props.auth;
-    console.log(auth.role)
     return (
         <AuthenticatedLayout
             header={
